@@ -27,7 +27,6 @@ yarn-error.log
 /.zed
 /.agents
 /.amp
-/.claude
 /.cursor
 /.factory
 /.grok
@@ -43,3 +42,4 @@ yarn-error.log
 
 # JOCA (local)
 .joca/
+/.claude/settings.local.json

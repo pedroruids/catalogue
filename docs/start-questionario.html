@@ -342,7 +342,7 @@ function fmt(f){
 function buildPrompt(){
   const nome=val({id:'nome',def:'maravilha'})||'maravilha';
   const d=new Date().toISOString().slice(0,10);
-  let t=`/start /home/pedro/Documents/claude/Projects/${nome}\n\nRespostas da entrevista do /start para o projecto «${nome}», preenchidas no questionário HTML (${d}).\nTrata-as como as respostas dos formulários da skill start: não repitas perguntas já respondidas; pergunta só o que está «(em branco)» ou vago (sobretudo o «O que NÃO é»). Depois escreve docs/PRD.md, docs/DECISIONS.md, docs/DESIGN.md, PROGRESSO.md e a memória do Brain, e segue para o próximo workflow conforme o «Fecho».\n`;
+  let t=`/start Projects/${nome}\n\nRespostas da entrevista do /start para o projecto «${nome}», preenchidas no questionário HTML (${d}).\nTrata-as como as respostas dos formulários da skill start: não repitas perguntas já respondidas; pergunta só o que está «(em branco)» ou vago (sobretudo o «O que NÃO é»). Depois escreve docs/PRD.md, docs/DECISIONS.md, docs/DESIGN.md, PROGRESSO.md e a memória do Brain, e segue para o próximo workflow conforme o «Fecho».\n`;
   STEPS.filter(vis).forEach(st=>{
     if(st.id==='prompt')return;
     const fs=st.fields.filter(fvis);if(!fs.length)return;
