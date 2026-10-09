@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arranque do Maravilha</title>
+<style>
+:root{
+  --bg:#f6f5f2; --surface:#ffffff; --surface-2:#f0eee9; --text:#1b1a17; --muted:#6b675f;
+  --line:#e2dfd8; --brand:#3a4bd8; --brand-soft:#e7e9fb; --ok:#16794a; --warn:#a15c00; --warn-soft:#fff3df;
+  --radius:10px; --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121212; --surface:#1b1b1d; --surface-2:#242427; --text:#ecebe8; --muted:#a19d95;
+    --line:#2f2f33; --brand:#8a96ff; --brand-soft:#262a4a; --ok:#4cc38a; --warn:#f0b35a; --warn-soft:#3a2c14;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121212; --surface:#1b1b1d; --surface-2:#242427; --text:#ecebe8; --muted:#a19d95;
+  --line:#2f2f33; --brand:#8a96ff; --brand-soft:#262a4a; --ok:#4cc38a; --warn:#f0b35a; --warn-soft:#3a2c14;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 80px;display:grid;grid-template-columns:240px 1fr;gap:28px}
+@media (max-width:780px){.wrap{grid-template-columns:1fr}.nav{position:static!important}}
+header.top{grid-column:1/-1;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{font-size:24px;margin:0 0 4px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#111}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#111}}
+.nav{position:sticky;top:16px;align-self:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow)}
+.nav button{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:0;background:none;color:var(--text);padding:8px 10px;border-radius:8px;font:inherit;cursor:pointer}
+.nav button:hover{background:var(--surface-2)}
+.nav button.on{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.nav .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--surface-2);color:var(--muted);flex:none}
+.nav button.done .n{background:var(--ok);color:#fff}
+.nav button.skip{opacity:.45}
+.nav .bar{height:4px;background:var(--surface-2);border-radius:4px;margin:10px 10px 4px;overflow:hidden}
+.nav .bar i{display:block;height:100%;background:var(--brand);width:0;transition:width .2s}
+.nav small{display:block;color:var(--muted);padding:0 10px 4px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);min-width:0}
+.panel h2{margin:0 0 4px;font-size:20px}
+.panel .lead{color:var(--muted);margin:0 0 20px}
+.q{border-top:1px solid var(--line);padding:18px 0}
+.q:first-of-type{border-top:0;padding-top:4px}
+.q label.t{display:block;font-weight:600;margin-bottom:4px}
+.q .h{color:var(--muted);font-size:13.5px;margin:0 0 10px}
+.opts{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--surface)}
+.opt:hover{border-color:var(--brand)}
+.opt input{margin-top:3px;accent-color:var(--brand)}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt b{display:block;font-weight:600}
+.opt span{color:var(--muted);font-size:13px}
+.rec{font-size:11px;font-weight:600;color:var(--ok);margin-left:4px}
+.sw{display:flex;gap:4px;margin-top:6px}.sw i{width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.12)}
+input[type=text],textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font:inherit;background:var(--surface);color:var(--text)}
+textarea{min-height:84px;resize:vertical}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:-1px;border-color:transparent}
+.other{margin-top:8px}
+.warn{background:var(--warn-soft);color:var(--warn);border-radius:8px;padding:8px 12px;font-size:13.5px;margin-top:8px}
+.count{font-size:13px;color:var(--muted);margin-top:6px}
+.count.okc{color:var(--ok)}
+.fluxo{border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:10px;display:grid;gap:8px;background:var(--surface-2)}
+.fluxo .row{display:flex;justify-content:space-between;align-items:center}
+.fluxo textarea{min-height:56px}
+.foot{display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}
+pre.out{white-space:pre-wrap;word-break:break-word;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:16px;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:60vh;overflow:auto}
+.missing li{margin:2px 0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Arranque do <span id="pn">maravilha</span></h1>
+      <p class="sub">Todas as perguntas e decisões do /start, passo a passo. No fim gera um prompt para colar no Claude Code.</p>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" id="theme" type="button">Tema</button>
+      <button class="btn" id="reset" type="button">Limpar respostas</button>
+    </div>
+  </header>
+  <nav class="nav" id="nav" aria-label="Passos"></nav>
+  <main class="panel" id="panel"></main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const KEY='start-maravilha-v1';
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){S={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const arr=k=>Array.isArray(S[k])?S[k]:[];
+const has=(k,v)=>arr(k).includes(v);
+const isApp=()=>has('tipo','Aplicação / plataforma');
+const isWeb=()=>has('tipo','Website');
+const isId=()=>has('tipo','Identidade / branding');
+const isMkt=()=>has('tipo','Marketing');
+const onlyMkt=()=>isMkt()&&!isApp()&&!isWeb()&&!isId();
+const needsCode=()=>isApp()||isWeb();
+const minNao=()=>(isApp()||isWeb())?5:3;
+const appCaps=()=>['Login / contas','Pagamentos','Múltiplos utilizadores / equipas'].some(c=>has('capacidades',c));
+
+const STEPS=[
+ {id:'tipo',title:'Tipo de trabalho',lead:'Decide que fases correm e para que workflow segue no fim.',fields:[
+  {id:'tipo',type:'check',label:'Que tipo de trabalho é?',help:'Podes marcar mais do que um. Site com login, área reservada, loja ou BD própria é Aplicação, mesmo que lhe chames site.',options:[
+   ['Aplicação / plataforma','SaaS, ferramenta, app móvel, jogo, API → executar-projeto'],
+   ['Website','Institucional, landing, portefólio, sem backend a sério → pipeline Website'],
+   ['Identidade / branding','Logótipo, marca, manual, aplicações → pipeline Identidade'],
+   ['Marketing','Campanhas, redes sociais, ciclo de marca → /marketeer']]}
+ ]},
+ {id:'produto',title:'O produto',lead:'O problema, o público e as fronteiras são teus — escreve o máximo que conseguires.',fields:[
+  {id:'tipo_produto',type:'radio',show:isApp,label:'Tipo de produto',help:'Afunila a stack e o design.',other:true,options:[
+   ['SaaS / plataforma web','Multi-utilizador provável, backoffice. Laravel + Livewire + Filament'],
+   ['App móvel','Flutter + Laravel API, lojas, offline a considerar'],
+   ['Jogo','Móvel → Unity 6 · web → decidir na stack'],
+   ['Software / ferramenta interna','Densidade compacta, mais dados que marketing'],
+   ['Só API / backend','Sem ecrãs; contratos primeiro'],
+   ['Operação / misto','Sem código próprio (ex.: só docs + tracker)']]},
+  {id:'nome',type:'text',label:'Nome do projecto',def:'maravilha',help:'Vem da pasta. Muda se o nome do produto for outro.'},
+  {id:'problema',type:'area',label:'O problema, em 1-2 frases',help:'Que dor resolve e para quem. Sem jargão.'},
+  {id:'publico',type:'area',label:'Para quem é',help:'Utilizadores concretos. «Empresas» não serve; «o responsável de operações numa equipa de 5-20 pessoas» serve. Um por linha.'},
+  {id:'hoje',type:'radio',label:'Como é resolvido hoje',other:true,options:[
+   ['Excel / folha de cálculo',''],['Ferramenta genérica mal encaixada',''],['À mão / papel',''],['Concorrente directo','Diz qual no campo abaixo'],['Não é resolvido','']]},
+  {id:'hoje_mau',type:'area',label:'Porque é que a solução actual é má',help:'O que custa: tempo, erros, dinheiro, frustração.'},
+  {id:'nao_e',type:'check',label:'O que NÃO é',help:'Fronteiras de âmbito. Mínimo de 5 (3 se for só identidade/marketing). Acrescenta os teus, um por linha, no campo «Outros».',min:minNao,other:'area',options:[
+   ['Não faz facturação',''],['Não tem app móvel nesta versão',''],['Não é multi-idioma',''],['Não é marketplace',''],['Não tem chat',''],['Não é ferramenta de BI / relatórios avançados',''],['Não funciona offline',''],['Não substitui o ERP','']]},
+  {id:'v1',type:'area',label:'Primeira versão utilizável',help:'O corte mínimo que já dá para usar a sério. Se quiseres, escreve 3 cortes (pequeno · médio · completo) e marca o preferido.'},
+  {id:'distribuicao',type:'radio',label:'Âmbito de distribuição',help:'Decide a regra de licença de assets e de código de terceiros.',options:[
+   ['Privado','Só o dono / família'],['Partilhado','Grupo fechado'],['Publicado','Grátis e público'],['Vendido','Produto comercial']]},
+  {id:'familia',type:'area',label:'Família de N peças? (opcional)',help:'Se o projecto gera várias peças da mesma família, define já o texto canónico partilhado (formato de datas, unidades, pontuação).'}
+ ]},
+ {id:'mkt',title:'Marketing',show:isMkt,lead:'Só o que o /start pergunta. Orçamento, valor de um cliente e quem responde aos leads ficam para a F0 do /marketeer.',fields:[
+  {id:'mkt_objetivo',type:'check',label:'Objectivo de negócio',other:true,options:[['Leads',''],['Vendas',''],['Marcações',''],['Chamadas',''],['Notoriedade','']]},
+  {id:'mkt_prazo',type:'text',label:'Prazo',help:'Data ou evento.'},
+  {id:'mkt_aprovador',type:'text',label:'Aprovador',help:'Nome ou função (podes ser tu).'},
+  {id:'mkt_url',type:'text',label:'URL do site'}
+ ]},
+ {id:'fluxos',title:'Fluxos e capacidades',show:needsCode,lead:'A espinha do design e do modelo de dados.',fields:[
+  {id:'fluxos',type:'fluxos',show:isApp,label:'Percursos principais (3 a 6)',help:'Para cada um: quem · o que quer · os passos · o que pode correr mal.'},
+  {id:'paginas',type:'area',show:()=>isWeb()&&!isApp(),label:'Páginas do site',help:'Uma por linha (ex.: Início, Serviços, Sobre, Contactos).'},
+  {id:'capacidades',type:'check',label:'Capacidades transversais',help:'Checklist — marca tudo o que se aplica.',options:[
+   ['Login / contas','Decide já o método abaixo'],['Múltiplos utilizadores / equipas','Tenancy — muda o modelo de dados'],['Pagamentos','Passo irreversível na execução'],['Notificações (email / push)','Push exige app móvel'],['Backoffice / administração','Filament v5'],['Multi-idioma','i18n desde o dia 1'],['Offline / sincronização','Só móvel; muda a arquitectura'],['Uploads / ficheiros','S3 / R2']]},
+  {id:'auth_metodo',type:'check',show:()=>has('capacidades','Login / contas'),label:'Método de login',options:[['Email + password',''],['Login social (Google, etc.)',''],['Magic link','']]},
+  {id:'ecras',type:'area',show:isApp,label:'Ecrãs',help:'Um por linha. Se não souberes todos, põe os que sabes — o Claude completa a partir dos fluxos.'},
+  {id:'entidades',type:'area',show:isApp,label:'Entidades (os «objectos» do sistema)',help:'Um por linha, ex.: Cliente, Encomenda, Produto.'}
+ ]},
+ {id:'stack',title:'Stack',show:needsCode,lead:'Stack da casa: as perguntas escolhem que peças entram, não peças de fora. Sair dela exige razão em DECISIONS.md.',fields:[
+  {id:'st_front',type:'radio',label:'Frontend web',other:true,rec:()=>(isWeb()&&!isApp())?'Next.js 16':'Livewire 4 + Flux',options:[
+   ['Livewire 4 + Flux','Apps Laravel'],['Next.js 16','Sites / landing, ou SPA sobre API'],['Ambos','Site público Next + app Livewire'],['Nenhum','Só API ou só app móvel']]},
+  {id:'st_back',type:'radio',label:'Backend',rec:()=>(isWeb()&&!isApp())?'Nenhum':'Laravel 13',options:[
+   ['Laravel 13',''],['Nenhum','Next full-stack — só para sites sem lógica de servidor real']]},
+  {id:'st_bd',type:'radio',label:'Base de dados',help:'Dev e produção no mesmo motor — SQLite em dev com MySQL em produção esconde erros até ao deploy.',rec:()=>(isWeb()&&!isApp())?'Nenhuma':'MySQL 8.4',options:[
+   ['MySQL 8.4','Recomendado: produção cPanel / Ploi, phpMyAdmin'],['PostgreSQL','Tipos ricos / JSON pesado (esta máquina tem PG 18)'],['SQLite','Só dev / protótipo'],['Nenhuma','Site estático']]},
+  {id:'st_backoffice',type:'radio',label:'Backoffice',show:()=>S.st_back!=='Nenhum',rec:()=>'Filament v5',options:[['Filament v5','Só com Laravel'],['Nenhum','']]},
+  {id:'st_movel',type:'radio',label:'App móvel',rec:()=>S.tipo_produto==='App móvel'?'Flutter':'Nenhuma nesta versão',options:[['Flutter',''],['Nenhuma nesta versão','']]},
+  {id:'st_jogo',type:'radio',label:'Motor do jogo',show:()=>S.tipo_produto==='Jogo',other:true,options:[['Unity 6 (móvel)','Via da casa'],['Next.js + canvas / Phaser (web)',''],['Unity WebGL (web)','']]},
+  {id:'amb_maquina',type:'radio',label:'Ambiente local',help:'Onde corre na máquina de quem desenvolve.',rec:()=>'Esta máquina — Ubuntu + FlyEnv',other:true,options:[
+   ['Esta máquina — Ubuntu + FlyEnv','PHP 8.4.23 + Composer 2.10.3 do FlyEnv · Node 22 · sem Docker'],['Outra máquina','Diz qual no campo abaixo']]},
+  {id:'amb_bd',type:'radio',label:'Motor de BD local',help:'Tem de ser o mesmo motor de produção.',other:true,options:[
+   ['Cluster PostgreSQL próprio de utilizador','Sem sudo; porta própria, superuser, receita provada nesta máquina'],['MySQL local','Via FlyEnv (a instalar pelo MCP do FlyEnv)'],['SQLite em dev','Só com decisão registada'],['Não se aplica','Sem BD']]},
+  {id:'amb_url',type:'text',label:'Onde responde o servidor de dev',def:'http://localhost:8000',help:'Ex.: http://localhost:8000 (Laravel), http://localhost:3000 (Next) ou porta própria.'},
+  {id:'amb_portas',type:'text',label:'Portas já ocupadas nesta máquina',def:'5432 (PostgreSQL), 6379 (Redis), 7491/7492 (JOCA_OS), 7682 (FlyEnv MCP)',help:'Colisão de porta é falha silenciosa. Acrescenta as de outros projectos que corras.'},
+  {id:'amb_multi',type:'radio',label:'Mais do que uma máquina?',help:'Se sim, cada uma leva a sua linha de ambiente e o repo leva .gitattributes com fim de linha LF.',options:[['Não, só esta',''],['Sim','Diz quais no campo abaixo']],other:true}
+ ]},
+ {id:'infra',title:'Infraestrutura',show:()=>!onlyMkt(),lead:'Regista-se agora; o deploy só se configura na fase final da execução.',fields:[
+  {id:'repo_owner',type:'radio',label:'Dono do repositório GitHub',options:[['setuptechpt','Organização Setup Tech'],['pedroruids','Conta pessoal'],['Sem repositório','Só possível em identidade/branding']]},
+  {id:'repo_nome',type:'text',label:'Nome do repositório',show:()=>S.repo_owner!=='Sem repositório',def:'maravilha',help:'kebab-case. Verificado: ainda não existe em nenhum dos teus donos.'},
+  {id:'repo_vis',type:'radio',label:'Visibilidade',show:()=>S.repo_owner!=='Sem repositório',options:[['Privado','Rulesets em privado exigem plano Pro/Team'],['Público','']]},
+  {id:'bd_onde',type:'radio',label:'Onde vive a base de dados em produção',show:needsCode,options:[['VPS gerida pelo Ploi',''],['cPanel',''],['Só local por agora',''],['Sem BD','']]},
+  {id:'bd_cliente',type:'radio',label:'Cliente de gestão da BD',show:needsCode,options:[['phpMyAdmin','Default da casa'],['TablePlus / DBeaver',''],['Só CLI','']]},
+  {id:'deploy',type:'radio',label:'Deploy',show:needsCode,options:[['Ploi','Default da casa (MCP ligado)'],['cPanel','Default da casa'],['Vercel','Só Next'],['Docker / VPS',''],['Decidir depois','']]}
+ ]},
+ {id:'design',title:'Design',show:()=>!onlyMkt(),lead:'Se já existe algo, os tokens medem-se dali — nunca se inventam.',fields:[
+  {id:'design_existe',type:'radio',label:'Já existe alguma coisa?',options:[
+   ['Sim — marca / manual / Figma / site','Indica o que e onde'],['Sim — mas só referências / gostos','Cola os links'],['Não — escolho já aqui','Abre as direcções abaixo'],['Não — explorar na execução','A execução corre variantes a fundo']]},
+  {id:'design_fonte',type:'area',label:'O que existe e onde',show:()=>(S.design_existe||'').startsWith('Sim'),help:'Ficheiro, URL, export do Figma, links de referência.'},
+  {id:'d_direccao',type:'radio',show:()=>S.design_existe==='Não — escolho já aqui',label:'Direcção geral',options:[
+   ['Minimal e preciso','Muito branco, hierarquia por tipografia'],['Editorial','Serifas, ritmo de revista'],['Tech escuro','Fundo escuro, acento vivo, mono nos dados'],['Quente e humano','Tons quentes, formas suaves'],['Bold e gráfico','Contraste alto, blocos de cor'],['Lúdico','Cor generosa, cantos redondos, energia de jogo']]},
+  {id:'d_tipo',type:'radio',show:()=>S.design_existe==='Não — escolho já aqui',label:'Par tipográfico',options:[
+   ['Inter + Inter','Neutro e funcional'],['Instrument Serif + Inter','Editorial moderno'],['Fraunces + Manrope','Quente com carácter'],['Space Grotesk + IBM Plex Sans','Técnico'],['Playfair Display + Source Sans 3','Clássico elegante'],['Sora + DM Sans','Geométrico amigável']]},
+  {id:'d_paleta',type:'radio',show:()=>S.design_existe==='Não — escolho já aqui',label:'Paleta',swatch:true,options:[
+   ['Índigo profissional','marca #4F46E5 · acento #818CF8 · fundo #FFFFFF · texto #111827'],
+   ['Esmeralda calma','marca #0E7A5F · acento #34C79B · fundo #F7FAF8 · texto #12211B'],
+   ['Âmbar quente','marca #B45309 · acento #F59E0B · fundo #FDF8F1 · texto #292018'],
+   ['Grafite + lima','marca #191B1E · acento #B8F53C · fundo #0F1113 · texto #F2F3F1 (dark-first)'],
+   ['Marinho clássico','marca #1E3A5F · acento #C9A227 · fundo #FAFAF7 · texto #14202E'],
+   ['Terracota editorial','marca #B3502E · acento #E07B54 · fundo #FAF4EE · texto #2B211C'],
+   ['Magenta bold','marca #C2186B · acento #FF5CA8 · fundo #FFFFFF · texto #1C1017'],
+   ['Neutro puro','marca #131313 · acento #E23B2E · fundo #FFFFFF · texto #131313']]},
+  {id:'d_forma',type:'radio',show:()=>S.design_existe==='Não — escolho já aqui',label:'Forma',options:[['Rectos (0)','Sério, editorial, técnico'],['Suaves (0.5rem)','O default sensato'],['Redondos (0.75rem+ e pills)','Amigável, consumidor']]},
+  {id:'d_densidade',type:'radio',show:()=>S.design_existe==='Não — escolho já aqui',label:'Densidade',options:[['Compacta','Muitos dados por ecrã'],['Equilibrada','O meio-termo'],['Espaçosa','Muito ar, produto público']]},
+  {id:'d_refs',type:'area',show:()=>S.design_existe!=='Não — explorar na execução',label:'Links de referência (opcional)',help:'Sites ou apps de que gostas. Extraem-se princípios, nunca se copia.'}
+ ]},
+ {id:'fecho',title:'Fecho',lead:'O que acontece depois de o Claude gravar os documentos.',fields:[
+  {id:'proximo',type:'radio',label:'Depois do PRD e das decisões',rec:()=>'Sim, avançar',options:[
+   ['Sim, avançar','Segue logo para o primeiro workflow (executar-projeto / Website / Identidade / marketeer)'],['Não — só queria o plano','Fica tudo em docs/ + PROGRESSO.md']]},
+  {id:'notas',type:'area',label:'Mais alguma coisa que o Claude deva saber?',help:'Prazos, pessoas envolvidas, restrições, ideias soltas.'}
+ ]},
+ {id:'prompt',title:'Gerar prompt',lead:'Copia e cola no Claude Code, na sessão do /start.',fields:[]}
+];
+
+const vis=st=>!st.show||st.show();
+const fvis=f=>!f.show||f.show();
+let cur=0;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const val=f=>{const v=S[f.id];if(v===undefined&&f.def!==undefined)return f.def;if(v===undefined&&f.rec)return f.rec();return v};
+
+function filled(f){
+  if(f.type==='fluxos')return (S.fluxos||[]).filter(x=>x.quem||x.quer||x.passos).length>=3;
+  if(f.type==='check'){const n=arr(f.id).length+lines(S[f.id+'_outro']).length;return f.min?n>=f.min():n>0}
+  const v=val(f);return !!(v&&String(v).trim())||!!(S[f.id+'_outro']||'').trim();
+}
+function lines(t){return String(t||'').split('\n').map(x=>x.trim()).filter(Boolean)}
+function stepDone(st){const fs=st.fields.filter(fvis);return fs.length>0&&fs.every(filled)}
+
+function renderNav(){
+  const visSteps=STEPS.filter(vis).filter(s=>s.id!=='prompt');
+  const done=visSteps.filter(stepDone).length;
+  let h='';
+  STEPS.forEach((st,i)=>{
+    const v=vis(st);
+    const cls=[i===cur?'on':'',v&&st.id!=='prompt'&&stepDone(st)?'done':'',v?'':'skip'].join(' ');
+    h+=`<button type="button" class="${cls}" data-i="${i}" ${v?'':'title="Não se aplica ao tipo escolhido"'}><span class="n">${v&&st.id!=='prompt'&&stepDone(st)?'✓':i+1}</span>${esc(st.title)}</button>`;
+  });
+  h+=`<div class="bar"><i style="width:${visSteps.length?Math.round(done/visSteps.length*100):0}%"></i></div><small>${done} de ${visSteps.length} passos completos</small>`;
+  const nav=document.getElementById('nav');nav.innerHTML=h;
+  nav.querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(vis(STEPS[i])){cur=i;render()}});
+  document.getElementById('pn').textContent=val({id:'nome',def:'maravilha'})||'maravilha';
+}
+
+function optHTML(f,o,type){
+  const [v,d]=o;const recV=f.rec&&f.rec();
+  const checked=type==='radio'?val(f)===v:arr(f.id).includes(v);
+  let sw='';
+  if(f.swatch){const hx=d.match(/#[0-9A-Fa-f]{6}/g)||[];sw='<div class="sw">'+hx.map(x=>`<i style="background:${x}"></i>`).join('')+'</div>'}
+  return `<label class="opt ${checked?'sel':''}"><input type="${type}" name="${f.id}" value="${esc(v)}" ${checked?'checked':''}><div><b>${esc(v)}${recV===v?'<span class="rec">recomendado</span>':''}</b>${d?`<span>${esc(d)}</span>`:''}${sw}</div></label>`;
+}
+
+function fieldHTML(f){
+  let h=`<div class="q" data-f="${f.id}"><label class="t">${esc(f.label)}</label>${f.help?`<p class="h">${esc(f.help)}</p>`:''}`;
+  if(f.type==='radio'||f.type==='check'){
+    h+=`<div class="opts">${f.options.map(o=>optHTML(f,o,f.type==='radio'?'radio':'checkbox')).join('')}</div>`;
+    if(f.other==='area')h+=`<textarea class="other" data-o="${f.id}" placeholder="Outros (um por linha)">${esc(S[f.id+'_outro']||'')}</textarea>`;
+    else if(f.other)h+=`<input type="text" class="other" data-o="${f.id}" placeholder="Outro / pormenor (opcional)" value="${esc(S[f.id+'_outro']||'')}">`;
+    if(f.min)h+=`<div class="count" data-c="${f.id}"></div>`;
+  }else if(f.type==='text'){
+    h+=`<input type="text" data-t="${f.id}" value="${esc(val(f)||'')}">`;
+  }else if(f.type==='area'){
+    h+=`<textarea data-t="${f.id}">${esc(val(f)||'')}</textarea>`;
+  }else if(f.type==='fluxos'){
+    h+=`<div id="fl"></div><button type="button" class="btn" id="addfl">+ Acrescentar percurso</button><div class="count" data-c="fluxos"></div>`;
+  }
+  return h+'</div>';
+}
+
+function renderFluxos(){
+  const box=document.getElementById('fl');if(!box)return;
+  if(!Array.isArray(S.fluxos)||!S.fluxos.length)S.fluxos=[{},{},{}];
+  box.innerHTML=S.fluxos.map((x,i)=>`<div class="fluxo"><div class="row"><b>Percurso ${i+1}</b>${S.fluxos.length>1?`<button type="button" class="btn" data-del="${i}">Remover</button>`:''}</div>
+   <input type="text" data-fx="${i}" data-k="quem" placeholder="Quem" value="${esc(x.quem||'')}">
+   <input type="text" data-fx="${i}" data-k="quer" placeholder="O que quer conseguir" value="${esc(x.quer||'')}">
+   <textarea data-fx="${i}" data-k="passos" placeholder="Os passos (um por linha)">${esc(x.passos||'')}</textarea>
+   <textarea data-fx="${i}" data-k="mal" placeholder="O que pode correr mal">${esc(x.mal||'')}</textarea></div>`).join('');
+  box.querySelectorAll('[data-fx]').forEach(el=>el.oninput=()=>{S.fluxos[+el.dataset.fx][el.dataset.k]=el.value;save();counts();renderNav()});
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{S.fluxos.splice(+b.dataset.del,1);save();renderFluxos();counts();renderNav()});
+  const add=document.getElementById('addfl');
+  add.style.display=S.fluxos.length>=6?'none':'';
+  add.onclick=()=>{S.fluxos.push({});save();renderFluxos();counts()};
+}
+
+function counts(){
+  document.querySelectorAll('[data-c]').forEach(el=>{
+    const id=el.dataset.c;
+    if(id==='fluxos'){const n=(S.fluxos||[]).filter(x=>x.quem||x.quer||x.passos).length;el.textContent=`${n} preenchido(s) — mínimo 3, máximo 6`;el.className='count'+(n>=3?' okc':'');return}
+    const f=STEPS.flatMap(s=>s.fields).find(x=>x.id===id);
+    const n=arr(id).length+lines(S[id+'_outro']).length,m=f.min();
+    el.textContent=n>=m?`${n} pontos ✓`:`${n} de ${m} — faltam ${m-n}`;el.className='count'+(n>=m?' okc':'');
+  });
+}
+
+function render(){
+  if(!vis(STEPS[cur]))cur=0;
+  const st=STEPS[cur];const p=document.getElementById('panel');
+  let h=`<h2>${cur+1}. ${esc(st.title)}</h2><p class="lead">${esc(st.lead)}</p>`;
+  if(st.id==='prompt'){
+    const miss=missing();
+    h+=miss.length?`<div class="warn"><b>Ainda em branco (${miss.length}):</b><ul class="missing">${miss.map(m=>`<li>${esc(m)}</li>`).join('')}</ul>Podes gerar na mesma — o Claude pergunta só estas.</div>`:'<p class="count okc">Tudo respondido.</p>';
+    h+=`<pre class="out" id="out">${esc(buildPrompt())}</pre><div class="foot"><button class="btn" type="button" id="prev">← Anterior</button><div style="display:flex;gap:8px"><button class="btn" type="button" id="dl">Descarregar .md</button><button class="btn primary" type="button" id="copy">Copiar prompt</button></div></div>`;
+  }else{
+    h+=st.fields.filter(fvis).map(fieldHTML).join('');
+    h+=`<div class="foot"><button class="btn" type="button" id="prev" ${cur===0?'disabled':''}>← Anterior</button><button class="btn primary" type="button" id="next">Seguinte →</button></div>`;
+  }
+  p.innerHTML=h;
+  p.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(el=>el.onchange=()=>{
+    const id=el.name;
+    if(el.type==='radio')S[id]=el.value;else S[id]=[...p.querySelectorAll(`input[name="${id}"]:checked`)].map(x=>x.value);
+    save();
+    // re-render: campos condicionais podem aparecer/desaparecer
+    const y=window.scrollY;render();window.scrollTo(0,y);
+  });
+  p.querySelectorAll('[data-t]').forEach(el=>el.oninput=()=>{S[el.dataset.t]=el.value;save();renderNav()});
+  p.querySelectorAll('[data-o]').forEach(el=>el.oninput=()=>{S[el.dataset.o+'_outro']=el.value;save();counts();renderNav()});
+  renderFluxos();counts();renderNav();
+  const nx=document.getElementById('next');if(nx)nx.onclick=()=>go(1);
+  const pv=document.getElementById('prev');if(pv)pv.onclick=()=>go(-1);
+  const cp=document.getElementById('copy');if(cp)cp.onclick=copyPrompt;
+  const dl=document.getElementById('dl');if(dl)dl.onclick=download;
+}
+function go(d){let i=cur+d;while(i>=0&&i<STEPS.length&&!vis(STEPS[i]))i+=d;if(i>=0&&i<STEPS.length){cur=i;render();window.scrollTo(0,0)}}
+
+function missing(){
+  const m=[];
+  STEPS.filter(vis).forEach(st=>st.fields.filter(fvis).forEach(f=>{if(!filled(f)&&f.id!=='familia'&&f.id!=='notas'&&f.id!=='d_refs')m.push(`${st.title} → ${f.label}`)}));
+  return m;
+}
+function fmt(f){
+  if(f.type==='fluxos'){
+    const fl=(S.fluxos||[]).filter(x=>x.quem||x.quer||x.passos||x.mal);
+    if(!fl.length)return '(em branco)';
+    return '\n'+fl.map((x,i)=>`  ${i+1}. Quem: ${x.quem||'?'} · Quer: ${x.quer||'?'}\n     Passos: ${lines(x.passos).join(' → ')||'?'}\n     Pode correr mal: ${x.mal||'?'}`).join('\n');
+  }
+  if(f.type==='check'){
+    const items=[...arr(f.id),...lines(S[f.id+'_outro'])];
+    return items.length?'\n'+items.map(x=>'  - '+x).join('\n'):'(em branco)';
+  }
+  let v=val(f);v=v&&String(v).trim();
+  const o=(S[f.id+'_outro']||'').trim();
+  if(f.type==='area'&&v&&v.includes('\n'))v='\n'+lines(v).map(x=>'  - '+x).join('\n');
+  if(f.type==='radio'&&v&&f.options){const op=f.options.find(x=>x[0]===v);if(op&&op[1]&&f.swatch)v+=` (${op[1]})`}
+  if(v&&o)return `${v} — ${o}`;
+  return v||o||'(em branco)';
+}
+function buildPrompt(){
+  const nome=val({id:'nome',def:'maravilha'})||'maravilha';
+  const d=new Date().toISOString().slice(0,10);
+  let t=`/start /home/pedro/Documents/claude/Projects/${nome}\n\nRespostas da entrevista do /start para o projecto «${nome}», preenchidas no questionário HTML (${d}).\nTrata-as como as respostas dos formulários da skill start: não repitas perguntas já respondidas; pergunta só o que está «(em branco)» ou vago (sobretudo o «O que NÃO é»). Depois escreve docs/PRD.md, docs/DECISIONS.md, docs/DESIGN.md, PROGRESSO.md e a memória do Brain, e segue para o próximo workflow conforme o «Fecho».\n`;
+  STEPS.filter(vis).forEach(st=>{
+    if(st.id==='prompt')return;
+    const fs=st.fields.filter(fvis);if(!fs.length)return;
+    t+=`\n## ${st.title}\n`;
+    fs.forEach(f=>{t+=`- ${f.label}: ${fmt(f)}\n`});
+  });
+  if(appCaps()&&!isApp())t+=`\n⚠ Marcaste Website mas também login/pagamentos/multi-utilizador → isto passa a Aplicação.\n`;
+  const m=missing();
+  if(m.length)t+=`\n## Em falta (perguntar)\n`+m.map(x=>'- '+x).join('\n')+'\n';
+  return t;
+}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),1800)}
+function copyPrompt(){
+  const txt=buildPrompt();
+  const fallback=()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Prompt copiado')}catch(e){toast('Selecciona e copia à mão')}ta.remove()};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(txt).then(()=>toast('Prompt copiado'),fallback);else fallback();
+}
+function download(){
+  const b=new Blob([buildPrompt()],{type:'text/markdown'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download=`start-${val({id:'nome',def:'maravilha'})||'maravilha'}-respostas.md`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+document.getElementById('reset').onclick=()=>{S={};save();cur=0;render();toast('Respostas limpas')};
+document.getElementById('theme').onclick=()=>{
+  const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme=dark?'light':'dark';
+};
+render();
+</script>
+</body>
+</html>

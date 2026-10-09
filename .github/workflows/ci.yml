@@ -1,0 +1,80 @@
+# CI: formatação, análise estática e testes — contra MySQL 8.4, o motor de dev e produção (D2).
+# Substitui o tests.yml do starter kit (corria `composer setup`, que migra contra SQLite).
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: catalogue_tests
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql
+          tools: composer:v2
+          coverage: none
+
+      - name: Localizar a cache do Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - run: composer install --prefer-dist --no-interaction --no-progress
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci && npm run build
+
+      - name: Preparar ambiente
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Pint (formatação)
+        run: ./vendor/bin/pint --test
+
+      - name: Larastan (análise estática)
+        run: ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
+      # O phpunit.xml não usa force="true": estas variáveis ganham ao <env> dele.
+      - name: Pest
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: catalogue_tests
+          DB_USERNAME: root
+          DB_PASSWORD: root
+        run: ./vendor/bin/pest
