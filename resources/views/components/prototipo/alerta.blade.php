@@ -11,7 +11,7 @@
     'border-warn-border bg-warn-bg text-text' => $tipo === 'aviso',
     'border-success-bg bg-success-bg font-semibold text-success' => $tipo === 'sucesso',
 ]) }}>
-    <x-prototipo.icone :nome="$icone ?? match ($tipo) { 'erro' => 'alerta', 'aviso' => 'sem-wifi', default => 'visto' }" class="mt-0.5 size-5" />
+    <x-prototipo.icone :nome="$icone ?? match ($tipo) { 'erro' => 'alerta-circulo', 'aviso' => 'sem-wifi', default => 'visto' }" class="mt-0.5 size-5" />
     <div>
         @if ($titulo)<strong class="font-bold">{{ $titulo }}</strong> @endif{{ $slot }}
     </div>

@@ -37,6 +37,9 @@ document.addEventListener('alpine:init', () => {
         seleccao: Array.isArray(guardado.seleccao) ? guardado.seleccao : [],
         offline: rede === 'off' ? true : rede === 'on' ? false : (guardado.offline ?? false),
         seletorAberto: guardado.seletorAberto ?? true,
+        // Estados de demo «sem rede» forçam offline sem o gravar: guardar() grava a rede real.
+        offlineForcado: false,
+        redeReal: null,
 
         get online() {
             return !this.offline;
@@ -49,7 +52,13 @@ document.addEventListener('alpine:init', () => {
             this.precosVisiveis = !this.precosVisiveis;
             this.guardar();
         },
+        forcarOffline() {
+            if (!this.offlineForcado) this.redeReal = this.offline;
+            this.offline = true;
+            this.offlineForcado = true;
+        },
         toggleRede() {
+            this.offlineForcado = false;
             this.offline = !this.offline;
             this.guardar();
         },
@@ -82,7 +91,7 @@ document.addEventListener('alpine:init', () => {
             gravar({
                 precosVisiveis: this.precosVisiveis,
                 seleccao: this.seleccao,
-                offline: this.offline,
+                offline: this.offlineForcado ? this.redeReal : this.offline,
                 seletorAberto: this.seletorAberto,
             });
         },

@@ -3,5 +3,5 @@
 <div {{ $attributes->class([
     'inline-flex items-center rounded-lg border border-dashed border-placeholder-logo font-display font-semibold text-brand',
     'h-9 px-2 text-[19px]' => ! $grande,
-    'h-14 px-3 text-[30px]' => $grande,
+    'h-[52px] px-4 text-[30px]' => $grande,
 ]) }}>Maravilha</div>
