@@ -162,7 +162,7 @@ Uma máquina só; `.gitattributes` com `eol=lf` entra na E1 na mesma.
 
 ## 9. Design
 
-Ver `docs/DESIGN.md` — quente e humano, Fraunces + Manrope, marinho clássico, cantos suaves,
+Ver `docs/DESIGN.md` — quente e humano, Bricolage Grotesque + Figtree (D9), marinho clássico, cantos suaves,
 densidade equilibrada, **mobile-first**.
 
 ---
@@ -183,5 +183,5 @@ densidade equilibrada, **mobile-first**.
 
 - North Star e metas.
 - Categoria para o filtro — entra? Que outros filtros (tipo, cor, preço)?
-- Validade por omissão dos links de partilha.
+- ~~Validade por omissão dos links de partilha~~ → 7 dias (7 · 30 · 90), D10.
 - Deploy e onde fica a BD de produção (D7 — decidir depois).
