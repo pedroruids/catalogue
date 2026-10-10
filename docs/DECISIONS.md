@@ -93,3 +93,16 @@ Uma entrada por decisão (formato: `.claude/reference/adr-formato.md` do JOCA). 
 **Decisão:** só local por agora. Defaults da casa a considerar na fase final: Ploi ou cPanel.
 
 **Consequências:** imagens em disco local na v1; S3/R2 decide-se com o deploy.
+
+## D8: Nome visível na interface é «Maravilha»
+
+**Data:** 2026-10-10 · **Estado:** aceite · **Decidido por:** Pedro (E2)
+
+**Contexto:** o projecto chama-se Catalogue internamente; a app é do cliente Maravilha.
+
+**Decisão:** app, PWA, página da partilha e emails mostram «Maravilha». «Catalogue» fica só como nome do repo/projecto.
+
+**Alternativas consideradas:**
+- «Catalogue» visível — rejeitada: a app é da marca do cliente.
+
+**Consequências:** manifest da PWA, `APP_NAME` e textos usam «Maravilha»; o logótipo continua em falta (BRAND.md).
