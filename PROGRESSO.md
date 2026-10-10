@@ -6,7 +6,8 @@
 ## Estado actual
 E1 quase fechada: scaffold, testes, CI verde, hooks e ruleset feitos; projecto **CAT-2026** no Xavier
 (cliente Maravilha) com os 11 issues da v1 (#1-#11). Falta só o Laravel Boost (interactivo, corre o Pedro).
-A seguir: E2 Design.
+E2 Design arrancada pela via Claude Design: pacote em `design/handoff/`, à espera do export em
+`design/claude-design/` para validar e converter para Livewire + Flux.
 
 ## Fases
 | Fase | Estado | Prova |
@@ -17,7 +18,7 @@ A seguir: E2 Design.
 | S4 Infraestrutura               | ✅ 2026-10-09 | repo pedroruids/catalogue (público, D6) · deploy: decidir depois (D7) |
 | S5 Direcção de design           | ✅ 2026-10-09 | docs/DESIGN.md |
 | E1 Fundação (scaffold+CI+hooks) | ⏳ falta Boost | CI verde no PR #1 (34 testes, MySQL 8.4) · ruleset «main protegida» · Xavier CAT-2026 #1-#11 |
-| E2 Design (via: <por decidir>)  | ⬜ | — |
+| E2 Design (via: Claude Design)  | ⏸ à espera do export | docs/BRAND.md · docs/ECRAS.md · design/handoff/ (4 docs + PROMPT.md) |
 | E3 Ponto de situação            | ⬜ | — |
 | E4 Desenvolvimento (ondas)      | ⬜ | — |
 | Produção                        | ⬜ | — |
@@ -27,6 +28,7 @@ A seguir: E2 Design.
 |---|---|---|---|
 
 ## Diário (mais recente primeiro)
+- 2026-10-10 · Pedro · E2 arrancada, via Claude Design: BRAND.md (mínimo; nome visível «Maravilha»; logótipo em falta), ECRAS.md (ecrãs 1-7 com 4 estados; 8-11 só tema Filament), pacote em design/handoff/. Aguarda export em design/claude-design/
 - 2026-10-10 · Pedro · Xavier: cliente Maravilha + projecto CAT-2026 + 11 issues (a API do Xavier passou a criar clientes, D-072 do Xavier)
 - 2026-10-10 · Pedro · E1: Laravel 13.35 + Livewire 4 + Flux + Filament 5.10 + Pest 5.3 em MySQL 8.4; repo público pedroruids/catalogue; PR #1 merged; ruleset na main
 - 2026-10-09 · Pedro · /start: entrevista por questionário HTML; PRD, D1-D7 e DESIGN escritos
