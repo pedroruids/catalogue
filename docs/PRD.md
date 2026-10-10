@@ -39,7 +39,7 @@ três modos: com preços, sem preços ou só imagens.
 | P2 Vendedor | Comercial que visita clientes | Quando estou com um cliente, quero abrir o artigo certo em segundos e mostrar (ou esconder) preços, para fechar a proposta na hora | Não consegue mostrar só o que quer; rede fraca no cliente |
 | P3 Cliente final (sem conta) | Empresa que encomenda brindes | Depois da visita, quero rever os artigos que me mostraram | Recebe material avulso, sem preços ou com preços que não devia ver |
 
-Cliente: empresa de brindes **nova** (nome por registar). Uma empresa só — ver `docs/DECISIONS.md` D3.
+Cliente: **Maravilha**, empresa de brindes nova. Uma empresa só — ver `docs/DECISIONS.md` D3.
 
 ---
 
@@ -124,7 +124,7 @@ Entidade nomeada na entrevista: **Artigo**. As restantes saem dos fluxos e confi
 | Definição de campo | Campo de um tipo (nome, tipo de dado, obrigatório, fixo/criado) |
 | Imagem | Fotos do artigo (e opcionalmente de uma variante) |
 | Variante | Combinação de opções do artigo (cor, tamanho…) |
-| Escalão de preço | Preço por quantidade mínima |
+| Escalão de preço | Preço por quantidade mínima, **por variante** (o preço varia por variante — Pedro, 2026-10-10) |
 | Partilha | Link público: artigos, modo, validade, revogação |
 | Utilizador | Admin ou vendedor |
 | Categoria | <pendente: confirmar — o filtro da lista precisa de um eixo> |
@@ -181,9 +181,7 @@ densidade equilibrada, **mobile-first**.
 
 ## 11. Questões em aberto
 
-- Nome do cliente (empresa de brindes nova).
 - North Star e metas.
 - Categoria para o filtro — entra? Que outros filtros (tipo, cor, preço)?
-- O preço varia por variante, ou os escalões são do artigo?
 - Validade por omissão dos links de partilha.
 - Deploy e onde fica a BD de produção (D7 — decidir depois).
