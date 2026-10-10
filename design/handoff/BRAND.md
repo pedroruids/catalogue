@@ -21,7 +21,7 @@ Quente e humano: próximo e acolhedor, sem formalidade (direcção escolhida no 
 - **Português de Portugal**, sempre (nunca PT-BR): «telemóvel», «ecrã», «partilhar», «ligação».
 - Frases curtas e directas. Quem usa a app está com um cliente à frente.
 - Mensagens de erro dizem o que aconteceu e o que fazer a seguir, sem culpar.
-- Ao cliente final (página da partilha): proposta, por confirmar → forma neutra («Veja os artigos»), sem «tu».
+- Ao cliente final (página da partilha): forma neutra («Veja os artigos»), sem «tu» (D11).
 
 ## Visual
 

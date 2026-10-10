@@ -6,8 +6,8 @@
 ## Estado actual
 E1 quase fechada: scaffold, testes, CI verde, hooks e ruleset feitos; projecto **CAT-2026** no Xavier
 (cliente Maravilha) com os 11 issues da v1 (#1-#11). Falta só o Laravel Boost (interactivo, corre o Pedro).
-E2 Design arrancada pela via Claude Design: pacote em `design/handoff/`, à espera do export em
-`design/claude-design/` para validar e converter para Livewire + Flux.
+E2 Design: mockups B do Claude Design em `docs/design_handoff_maravilha_app/` (ecrãs 1-7), validados;
+tipografia passou a Bricolage + Figtree (D9). A seguir: converter para Livewire + Flux (tokens no `@theme`, issue #11).
 
 ## Fases
 | Fase | Estado | Prova |
@@ -18,7 +18,7 @@ E2 Design arrancada pela via Claude Design: pacote em `design/handoff/`, à espe
 | S4 Infraestrutura               | ✅ 2026-10-09 | repo pedroruids/catalogue (público, D6) · deploy: decidir depois (D7) |
 | S5 Direcção de design           | ✅ 2026-10-09 | docs/DESIGN.md |
 | E1 Fundação (scaffold+CI+hooks) | ⏳ falta Boost | CI verde no PR #1 (34 testes, MySQL 8.4) · ruleset «main protegida» · Xavier CAT-2026 #1-#11 |
-| E2 Design (via: Claude Design)  | ⏸ à espera do export | docs/BRAND.md · docs/ECRAS.md · design/handoff/ (4 docs + PROMPT.md) |
+| E2 Design (via: Claude Design)  | ⏳ mockups B validados; falta converter para a stack | docs/design_handoff_maravilha_app/ · D9 (tipografia) · D10 (omissões) |
 | E3 Ponto de situação            | ⬜ | — |
 | E4 Desenvolvimento (ondas)      | ⬜ | — |
 | Produção                        | ⬜ | — |
@@ -28,6 +28,7 @@ E2 Design arrancada pela via Claude Design: pacote em `design/handoff/`, à espe
 |---|---|---|---|
 
 ## Diário (mais recente primeiro)
+- 2026-10-10 · Pedro · mockups B (ecrãs 1-7) recebidos e validados; D9 tipografia Bricolage + Figtree; D10 omissões; D11 propostas aceites; D8-D11 no Xavier
 - 2026-10-10 · Pedro · E2 arrancada, via Claude Design: BRAND.md (mínimo; nome visível «Maravilha»; logótipo em falta), ECRAS.md (ecrãs 1-7 com 4 estados; 8-11 só tema Filament), pacote em design/handoff/. Aguarda export em design/claude-design/
 - 2026-10-10 · Pedro · Xavier: cliente Maravilha + projecto CAT-2026 + 11 issues (a API do Xavier passou a criar clientes, D-072 do Xavier)
 - 2026-10-10 · Pedro · E1: Laravel 13.35 + Livewire 4 + Flux + Filament 5.10 + Pest 5.3 em MySQL 8.4; repo público pedroruids/catalogue; PR #1 merged; ruleset na main

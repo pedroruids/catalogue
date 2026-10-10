@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#FAFAF7}a{color:#1E3A5F}a:hover{color:#14202E}</style></helmet>
+<div style="min-height:680px;background:#FAFAF7;font-family:'Figtree',sans-serif;color:#14202E;display:flex;align-items:center;justify-content:center;padding:32px 20px;box-sizing:border-box">
+  <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;justify-content:center">
+      <div style="display:flex;align-items:center;height:52px;padding:0 16px;border:1px dashed #B9B2A3;border-radius:8px;font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:600;color:#1E3A5F">Maravilha</div>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #E3DED3;border-radius:8px;padding:28px 24px;display:flex;flex-direction:column;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600;color:#14202E">Entrar</h1>
+        <p style="margin:0;font-size:15px;line-height:1.5;color:#5A6472">Use o email e a password da sua conta.</p>
+      </div>
+      <sc-if value="{{ erro }}" hint-placeholder-val="{{ false }}">
+        <div role="alert" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:#FBEDEA;border:1px solid #E7C1BB;border-radius:8px;color:#9E2B25;font-size:15px;line-height:1.45;font-weight:600">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5h.01"></path></svg>
+          <span>Email ou password errados. Confirme e tente outra vez.</span>
+        </div>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:14px;font-weight:600">Email</label>
+        <input type="email" placeholder="nome@example.com" defaultValue="{{ email }}" disabled="{{ carregar }}" style="height:48px;padding:0 14px;border:1.5px solid #CFC8BA;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none" style-focus="border-color:#1E3A5F;box-shadow:0 0 0 3px rgba(201,162,39,0.35)">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:14px;font-weight:600">Password</label>
+        <sc-if value="{{ semErro }}" hint-placeholder-val="{{ true }}">
+          <input type="password" defaultValue="{{ pass }}" disabled="{{ carregar }}" style="height:48px;padding:0 14px;border:1.5px solid #CFC8BA;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none" style-focus="border-color:#1E3A5F;box-shadow:0 0 0 3px rgba(201,162,39,0.35)">
+        </sc-if>
+        <sc-if value="{{ erro }}" hint-placeholder-val="{{ false }}">
+          <input type="password" defaultValue="{{ pass }}" aria-invalid="true" style="height:48px;padding:0 14px;border:2px solid #9E2B25;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none">
+          <span style="font-size:14px;color:#9E2B25;font-weight:600">Verifique a password. Atenção às maiúsculas.</span>
+        </sc-if>
+      </div>
+      <sc-if value="{{ semCarregar }}" hint-placeholder-val="{{ true }}">
+        <button style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 20px;border:none;border-radius:8px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:pointer" style-hover="background:#16304F">Entrar</button>
+      </sc-if>
+      <sc-if value="{{ carregar }}" hint-placeholder-val="{{ false }}">
+        <button disabled style="display:flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 20px;border:none;border-radius:8px;background:#E4E0D7;color:#4F5967;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:not-allowed">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9" opacity="0.25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round"></path></svg>
+          A entrar…
+        </button>
+      </sc-if>
+      <a href="#" style="align-self:center;font-size:15px;font-weight:600;color:#1E3A5F;padding:8px">Esqueci-me da password</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:680},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vazio&quot;,&quot;carregar&quot;,&quot;erro&quot;],&quot;default&quot;:&quot;vazio&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const e = this.props.estado ?? 'vazio';
+    const cheio = e !== 'vazio';
+    return {
+      erro: e === 'erro', semErro: e !== 'erro', carregar: e === 'carregar', semCarregar: e !== 'carregar',
+      email: cheio ? 'rita.sousa@example.com' : '', pass: cheio ? '••••••••' : ''
+    };
+  }
+}
+</script>
+</body>
+</html>

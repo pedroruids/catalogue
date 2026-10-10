@@ -106,3 +106,43 @@ Uma entrada por decisão (formato: `.claude/reference/adr-formato.md` do JOCA). 
 - «Catalogue» visível — rejeitada: a app é da marca do cliente.
 
 **Consequências:** manifest da PWA, `APP_NAME` e textos usam «Maravilha»; o logótipo continua em falta (BRAND.md).
+
+## D9: Tipografia Bricolage Grotesque + Figtree
+
+**Data:** 2026-10-10 · **Estado:** aceite · **Decidido por:** Pedro (E2, mockups do Claude Design)
+
+**Contexto:** os mockups do Claude Design trouxeram a «proposta B» com outras fontes que não as do DESIGN.md.
+
+**Decisão:** Bricolage Grotesque nos títulos e Figtree no corpo. Substitui Fraunces + Manrope. A paleta base, o raio de 8 px e a direcção quente mantêm-se; os tokens novos dos mockups entram no sistema (DESIGN.md).
+
+**Alternativas consideradas:**
+- Fraunces + Manrope (DESIGN.md do /start) — rejeitada: o Pedro escolheu a B ao ver os ecrãs.
+
+**Consequências:** DESIGN.md actualizado; tema da app e do Filament (issue #11) usam as fontes novas.
+
+## D10: Valores por omissão da partilha e da recuperação
+
+**Data:** 2026-10-10 · **Estado:** aceite · **Decidido por:** Pedro (E2, a partir dos mockups)
+
+**Decisão:**
+- Partilha nova em modo **«Sem preços»**.
+- Validade da partilha: 7 · 30 · 90 dias, **omissão 7**.
+- Ligação de recuperação de password: **60 min**.
+- A página pública mostra quem partilhou («partilhada por <vendedor>, da Maravilha»).
+- Variante sem escalões mostra **«Preço sob consulta»**.
+
+**Consequências:** fecha a validade por omissão do PRD §11. A omissão «Sem preços» é a opção mais segura em caso de engano.
+
+## D11: Propostas dos mockups aceites
+
+**Data:** 2026-10-10 · **Estado:** aceite · **Decidido por:** Pedro (E2)
+
+**Decisão:**
+- Interruptor de preços **global** à sessão (lista e artigo); o filtro «Preço» desaparece com os preços escondidos.
+- «desde X €» no cartão da lista quando os preços estão visíveis.
+- «Juntar à selecção» no cartão da lista e na página do artigo.
+- O admin também entra na app do vendedor.
+- Partilha «só imagens» mostra o nome de cada artigo.
+- Ao cliente final, forma neutra («Veja os artigos»), sem «tu».
+
+**Em aberto:** quem revoga uma partilha — o mockup diz «no backoffice», mas o vendedor não tem acesso (PRD §4).

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#FAFAF7}a{color:#1E3A5F}a:hover{color:#14202E}</style></helmet>
+<div style="min-height:680px;background:#FAFAF7;font-family:'Figtree',sans-serif;color:#14202E;display:flex;align-items:center;justify-content:center;padding:32px 20px;box-sizing:border-box">
+  <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;justify-content:center">
+      <div style="display:flex;align-items:center;height:52px;padding:0 16px;border:1px dashed #B9B2A3;border-radius:8px;font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:600;color:#1E3A5F">Maravilha</div>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #E3DED3;border-radius:8px;padding:28px 24px;display:flex;flex-direction:column;gap:20px">
+      <sc-if value="{{ passo1 }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#5A6472">Passo 1 de 2</span>
+          <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600">Recuperar password</h1>
+          <p style="margin:0;font-size:15px;line-height:1.5;color:#5A6472;text-wrap:pretty">Indique o email da conta. Enviamos uma ligação para definir uma password nova.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="font-size:14px;font-weight:600">Email</label>
+          <sc-if value="{{ semErroEmail }}" hint-placeholder-val="{{ true }}">
+            <input type="email" placeholder="nome@example.com" defaultValue="{{ email }}" disabled="{{ carregar }}" style="height:48px;padding:0 14px;border:1.5px solid #CFC8BA;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none" style-focus="border-color:#1E3A5F;box-shadow:0 0 0 3px rgba(201,162,39,0.35)">
+          </sc-if>
+          <sc-if value="{{ erroEmail }}" hint-placeholder-val="{{ false }}">
+            <input type="email" defaultValue="rita.sousa@maravilha" aria-invalid="true" style="height:48px;padding:0 14px;border:2px solid #9E2B25;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none">
+            <span style="font-size:14px;color:#9E2B25;font-weight:600">O email parece incompleto. Exemplo: nome@example.com</span>
+          </sc-if>
+        </div>
+        <sc-if value="{{ semCarregar }}" hint-placeholder-val="{{ true }}">
+          <button style="display:flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border:none;border-radius:8px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:pointer" style-hover="background:#16304F">Enviar ligação</button>
+        </sc-if>
+        <sc-if value="{{ carregar }}" hint-placeholder-val="{{ false }}">
+          <button disabled style="display:flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 20px;border:none;border-radius:8px;background:#E4E0D7;color:#4F5967;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:not-allowed">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9" opacity="0.25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke-linecap="round"></path></svg>
+            A enviar…
+          </button>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{ passo2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#5A6472">Passo 2 de 2</span>
+          <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600">Nova password</h1>
+          <p style="margin:0;font-size:15px;line-height:1.5;color:#5A6472">Pelo menos 8 caracteres.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="font-size:14px;font-weight:600">Nova password</label>
+          <input type="password" defaultValue="{{ p1 }}" style="height:48px;padding:0 14px;border:1.5px solid #CFC8BA;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none" style-focus="border-color:#1E3A5F;box-shadow:0 0 0 3px rgba(201,162,39,0.35)">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="font-size:14px;font-weight:600">Confirmar password</label>
+          <sc-if value="{{ semErroIguais }}" hint-placeholder-val="{{ true }}">
+            <input type="password" style="height:48px;padding:0 14px;border:1.5px solid #CFC8BA;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none" style-focus="border-color:#1E3A5F;box-shadow:0 0 0 3px rgba(201,162,39,0.35)">
+          </sc-if>
+          <sc-if value="{{ erroIguais }}" hint-placeholder-val="{{ false }}">
+            <input type="password" defaultValue="Maravilha-2025" aria-invalid="true" style="height:48px;padding:0 14px;border:2px solid #9E2B25;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none">
+            <span style="font-size:14px;color:#9E2B25;font-weight:600">As passwords não coincidem. Escreva a mesma nos dois campos.</span>
+          </sc-if>
+        </div>
+        <button style="display:flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border:none;border-radius:8px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:pointer" style-hover="background:#16304F">Guardar password</button>
+      </sc-if>
+      <sc-if value="{{ expirada }}" hint-placeholder-val="{{ false }}">
+        <div style="width:48px;height:48px;border-radius:50%;background:#FBEDEA;color:#9E2B25;display:flex;align-items:center;justify-content:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2M9 2h6"></path></svg>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:600">Esta ligação já expirou</h1>
+          <p style="margin:0;font-size:15px;line-height:1.5;color:#5A6472;text-wrap:pretty">As ligações valem 60 minutos. Peça uma nova e use-a logo.</p>
+        </div>
+        <button style="display:flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border:none;border-radius:8px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:pointer" style-hover="background:#16304F">Pedir nova ligação</button>
+      </sc-if>
+      <sc-if value="{{ enviado }}" hint-placeholder-val="{{ false }}">
+        <div style="width:48px;height:48px;border-radius:50%;background:#E6F0EA;color:#2E6A47;display:flex;align-items:center;justify-content:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:600">Veja o seu email</h1>
+          <p style="margin:0;font-size:15px;line-height:1.5;color:#14202E;text-wrap:pretty">Se o email existir, enviámos uma ligação.</p>
+          <p style="margin:0;font-size:15px;line-height:1.5;color:#5A6472;text-wrap:pretty">Procure também no spam. A ligação vale 60 minutos.</p>
+        </div>
+        <button style="display:flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border:1.5px solid #1E3A5F;border-radius:8px;background:#FFFFFF;color:#1E3A5F;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:pointer">Voltar a entrar</button>
+      </sc-if>
+      <sc-if value="{{ mostraVoltar }}" hint-placeholder-val="{{ true }}">
+        <a href="#" style="align-self:center;font-size:15px;font-weight:600;color:#1E3A5F;padding:8px">Voltar a entrar</a>
+      </sc-if>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:680},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vazio&quot;,&quot;vazio2&quot;,&quot;carregar&quot;,&quot;erro-email&quot;,&quot;erro-expirada&quot;,&quot;erro-coincidem&quot;,&quot;cheio&quot;],&quot;default&quot;:&quot;vazio&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const e = this.props.estado ?? 'vazio';
+    const p1 = ['vazio', 'carregar', 'erro-email'].includes(e);
+    const p2 = ['vazio2', 'erro-coincidem'].includes(e);
+    return {
+      passo1: p1, passo2: p2, expirada: e === 'erro-expirada', enviado: e === 'cheio',
+      carregar: e === 'carregar', semCarregar: e !== 'carregar',
+      erroEmail: e === 'erro-email', semErroEmail: e !== 'erro-email',
+      erroIguais: e === 'erro-coincidem', semErroIguais: e !== 'erro-coincidem',
+      email: e === 'carregar' ? 'rita.sousa@example.com' : '',
+      p1: e === 'erro-coincidem' ? 'Maravilha-2026' : '',
+      mostraVoltar: p1 || p2
+    };
+  }
+}
+</script>
+</body>
+</html>
