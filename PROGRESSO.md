@@ -7,7 +7,7 @@
 E1 quase fechada: scaffold, testes, CI verde, hooks e ruleset feitos; projecto **CAT-2026** no Xavier
 (cliente Maravilha) com os 11 issues da v1 (#1-#11). Falta só o Laravel Boost (interactivo, corre o Pedro).
 E2 Design: mockups B do Claude Design em `docs/design_handoff_maravilha_app/` (ecrãs 1-7), validados;
-tipografia passou a Bricolage + Figtree (D9). A seguir: converter para Livewire + Flux (tokens no `@theme`, issue #11).
+tipografia passou a Bricolage + Figtree (D9). Protótipo estático navegável dos ecrãs 1-7 no stack (Xavier #12, `/prototipo`, só local) à espera do OK do Pedro no telemóvel.
 
 ## Fases
 | Fase | Estado | Prova |
@@ -28,6 +28,7 @@ tipografia passou a Bricolage + Figtree (D9). A seguir: converter para Livewire 
 |---|---|---|---|
 
 ## Diário (mais recente primeiro)
+- 2026-10-10 · Pedro · protótipo estático no stack (Blade + Flux + Alpine, sem BD): ecrãs 1-7 com todos os estados, tokens D9 no @theme, APP_NAME Maravilha; gate de runtime independente verde (55 rotas×estados a 360 px, D5 sem «€»); 134 testes
 - 2026-10-10 · Pedro · mockups B (ecrãs 1-7) recebidos e validados; D9 tipografia Bricolage + Figtree; D10 omissões; D11 propostas aceites; D8-D11 no Xavier
 - 2026-10-10 · Pedro · E2 arrancada, via Claude Design: BRAND.md (mínimo; nome visível «Maravilha»; logótipo em falta), ECRAS.md (ecrãs 1-7 com 4 estados; 8-11 só tema Filament), pacote em design/handoff/. Aguarda export em design/claude-design/
 - 2026-10-10 · Pedro · Xavier: cliente Maravilha + projecto CAT-2026 + 11 issues (a API do Xavier passou a criar clientes, D-072 do Xavier)
