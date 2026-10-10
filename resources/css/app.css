@@ -9,7 +9,39 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Tipografia (D9): Figtree no corpo, Bricolage Grotesque nos títulos */
+    --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Bricolage Grotesque', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+
+    /* Tokens Maravilha — docs/design_handoff_maravilha_app/README.md §Design tokens */
+    --color-brand: #1E3A5F;
+    --color-brand-hover: #16304F;
+    /* O acento #C9A227 chama-se `gold`: `--color-accent` é o contrato do Flux (botão primário = brand).
+       Só fundo do interruptor «com preços» e anel de foco — nunca texto sobre claro (2.31:1). */
+    --color-gold: #C9A227;
+    --color-bg: #FAFAF7;
+    --color-surface: #FFFFFF;
+    --color-surface-warm: #F3EFE6;
+    --color-text: #14202E;
+    --color-muted: #5A6472;
+    --color-muted-2: #4F5967;
+    --color-border: #E3DED3;
+    --color-border-soft: #ECE7DC;
+    --color-border-input: #CFC8BA;
+    --color-placeholder-logo: #B9B2A3;
+    --color-img-placeholder: #EFEAE0;
+    --color-img-label: #6B6458;
+    --color-skeleton: #ECE7DC;
+    --color-skeleton-2: #F1EDE4;
+    --color-disabled: #E4E0D7;
+    --color-disabled-text: #4F5967;
+    --color-error: #9E2B25;
+    --color-error-bg: #FBEDEA;
+    --color-error-border: #E7C1BB;
+    --color-warn-bg: #F6EBC8;
+    --color-warn-border: #E9D891;
+    --color-success: #2E6A47;
+    --color-success-bg: #E6F0EA;
 
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -23,9 +55,23 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    /* Flux: accent = marca, para os componentes Flux (botão primário, etc.) ficarem na marca */
+    --color-accent: var(--color-brand);
+    --color-accent-content: var(--color-brand);
     --color-accent-foreground: var(--color-white);
+}
+
+/* Riscas a 135° das imagens de produto por haver (README: img-placeholder) */
+@utility bg-riscas {
+    background-color: var(--color-img-placeholder);
+    background-image: repeating-linear-gradient(135deg, transparent 0 10px, rgb(20 32 46 / 0.035) 10px 20px);
+}
+
+/* Anel de foco da marca: contorno brand + anel gold a 35 % de 3 px (README §Forma) */
+@utility foco-marca {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 0;
+    box-shadow: 0 0 0 5px rgb(201 162 39 / 0.35);
 }
 
 @layer theme {
@@ -44,6 +90,18 @@
     ::backdrop,
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
+    }
+
+    /* Foco global (README): contorno brand + anel gold 35 % por fora */
+    :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 2px solid var(--color-brand);
+        outline-offset: 0;
+        box-shadow: 0 0 0 5px rgb(201 162 39 / 0.35);
+    }
+
+    /* Ícones Flux (Heroicons, traço 1.5) passam a traço 2 px, como nos mockups */
+    [data-proto] svg[data-flux-icon][stroke-width] {
+        stroke-width: 2;
     }
 }
 
@@ -64,3 +122,7 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+[x-cloak] {
+    display: none !important;
+}
