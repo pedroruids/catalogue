@@ -44,7 +44,7 @@
         'preco' => ['rotulo' => 'Preço', 'curto' => 'Preço'],
     ];
 
-    $chipBase = 'flex h-10 shrink-0 items-center gap-1.5 rounded-full border text-sm font-semibold whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-60';
+    $chipBase = 'flex h-11 shrink-0 items-center gap-1.5 rounded-full border text-sm font-semibold whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-60';
 @endphp
 
 <x-prototipo.layout titulo="Artigos" :estados="$estados" :estado="$estado"
