@@ -209,6 +209,31 @@ it('o interruptor guarda a escolha na sessão e esconde os preços no HTML', fun
     expect(session('show_prices'))->toBeTrue();
 });
 
+it('com os preços escondidos, pesquisar, filtrar e mostrar mais também não traz preços', function () {
+    $tipo = ProductType::factory()->create(['name' => 'Têxtil']);
+    foreach (range(1, 26) as $i) {
+        publicado(['name' => sprintf('Caneca %02d', $i), 'product_type_id' => $tipo->id], 1250);
+    }
+
+    $this->actingAs(User::factory()->create())->withSession(['show_prices' => false]);
+
+    Livewire::test('pages::articles.index')
+        ->set('search', 'caneca')->assertSee('Caneca 01')->assertDontSee('€')->assertDontSee('desde')
+        ->set('type', (string) $tipo->id)->assertSee('Caneca 01')->assertDontSee('€')
+        ->call('loadMore')->assertSee('Caneca 26')->assertDontSee('€')->assertDontSee('desde');
+});
+
+it('um rascunho não aparece nem pesquisado pela referência exacta', function () {
+    publicado(['name' => 'Caneca Azul', 'reference' => 'CN-0001']);
+    Article::factory()->create(['name' => 'Caneca Rascunho', 'reference' => 'DRAFT-XYZ']);
+
+    $this->actingAs(User::factory()->create());
+
+    Livewire::test('pages::articles.index')
+        ->set('search', 'DRAFT-XYZ')
+        ->assertDontSee('Caneca Rascunho')->assertSee('Nenhum artigo encontrado');
+});
+
 it('pagina com «Mostrar mais artigos»', function () {
     foreach (range(1, 26) as $i) {
         publicado(['name' => sprintf('Artigo %02d', $i)], null);
