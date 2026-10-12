@@ -33,14 +33,14 @@ it('o seeder cria um admin', function () {
     expect(User::query()->where('role', Role::Admin)->count())->toBe(1);
 });
 
-it('o vendedor entra na app pelo login e vai ao dashboard', function () {
+it('o vendedor entra na app pelo login e vai à lista de artigos', function () {
     $vendedor = User::factory()->create(['password' => 'segredo-123']);
 
     $this->post(route('login.store'), ['email' => $vendedor->email, 'password' => 'segredo-123'])
         ->assertRedirect();
 
     $this->assertAuthenticatedAs($vendedor);
-    $this->get(route('dashboard'))->assertOk();
+    $this->get(route('articles.index'))->assertOk();
 });
 
 it('o admin entra na app pelo login', function () {
@@ -50,7 +50,7 @@ it('o admin entra na app pelo login', function () {
         ->assertRedirect();
 
     $this->assertAuthenticatedAs($admin);
-    $this->get(route('dashboard'))->assertOk();
+    $this->get(route('articles.index'))->assertOk();
 });
 
 it('o registo público está desligado', function () {
@@ -77,7 +77,7 @@ it('o admin cria um vendedor que entra na app sem verificar o email', function (
     auth()->logout();
     $this->post(route('login.store'), ['email' => 'ana@maravilha.test', 'password' => 'password-forte']);
     $this->assertAuthenticatedAs($ana);
-    $this->get(route('dashboard'))->assertOk();
+    $this->get(route('articles.index'))->assertOk();
 });
 
 it('exige password ao criar mas não ao editar', function () {
