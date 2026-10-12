@@ -24,11 +24,19 @@ class StoreArticleImage
 
     public const int QUALITY = 80;
 
-    /** Descomprimida ocupa 4 bytes/px (16 MP = 64 MB): acima disto estoura o memory_limit de 128 MB. */
+    /** Descomprimida ocupa 4 bytes/px (16 MP = 64 MB), e rodar precisa de dois bitmaps ao mesmo tempo. */
     public const int MAX_PIXELS = 16_000_000;
+
+    /** memory_limit mínimo durante o processamento: 16 MP com rotação EXIF mede-se bem abaixo disto (ver ImagensTest). */
+    private const string MEMORY_LIMIT = '256M';
 
     /** Devolve a mensagem (PT-PT) se a imagem não puder ser processada com segurança, ou null. */
     public static function validationError(UploadedFile $file): ?string
+    {
+        return self::withMemory(static fn (): ?string => self::checkImage($file));
+    }
+
+    private static function checkImage(UploadedFile $file): ?string
     {
         $path = (string) $file->getRealPath();
         $info = @getimagesize($path);
@@ -41,11 +49,47 @@ class StoreArticleImage
             return 'A imagem tem demasiados píxeis (máximo '.(self::MAX_PIXELS / 1_000_000).' megapíxeis).';
         }
 
-        if (@imagecreatefromstring((string) file_get_contents($path)) === false) {
+        // Descodifica para provar que o corpo é legível (o cabeçalho sozinho não apanha JPEG truncado) e liberta já.
+        $decoded = @imagecreatefromstring((string) file_get_contents($path));
+
+        if ($decoded === false) {
             return 'O ficheiro não é uma imagem legível ou está corrompido.';
         }
 
+        unset($decoded);
+
         return null;
+    }
+
+    /** Sobe o memory_limit só enquanto a imagem é processada (se o actual for menor) e restaura-o no fim. */
+    private static function withMemory(callable $work): mixed
+    {
+        $previous = (string) ini_get('memory_limit');
+        $raise = $previous !== '-1' && self::toBytes($previous) < self::toBytes(self::MEMORY_LIMIT);
+
+        if ($raise) {
+            ini_set('memory_limit', self::MEMORY_LIMIT);
+        }
+
+        try {
+            return $work();
+        } finally {
+            if ($raise) {
+                ini_set('memory_limit', $previous);
+            }
+        }
+    }
+
+    private static function toBytes(string $value): int
+    {
+        $number = (int) $value;
+
+        return match (strtoupper(substr(trim($value), -1))) {
+            'G' => $number * 1024 ** 3,
+            'M' => $number * 1024 ** 2,
+            'K' => $number * 1024,
+            default => $number,
+        };
     }
 
     public function handle(Article $article, UploadedFile $file): ArticleImage
@@ -58,6 +102,14 @@ class StoreArticleImage
      * @return ArticleImage a última criada
      */
     public function handleMany(Article $article, array $files): ArticleImage
+    {
+        return self::withMemory(fn (): ArticleImage => $this->storeMany($article, $files));
+    }
+
+    /**
+     * @param  non-empty-array<int, UploadedFile>  $files
+     */
+    private function storeMany(Article $article, array $files): ArticleImage
     {
         $written = [];
 
@@ -114,6 +166,7 @@ class StoreArticleImage
             Storage::disk('public')->put($paths[$size], $this->toWebp($source, $width));
             $written['public'][] = $paths[$size];
         }
+        unset($source);
         Storage::disk('local')->put($original, $contents);
         $written['local'][] = $original;
 
@@ -141,7 +194,10 @@ class StoreArticleImage
         };
 
         if ($angle !== 0) {
-            $image = imagerotate($image, $angle, 0) ?: $image;
+            // Os dois bitmaps coexistem durante a rotação; o original sai de memória logo a seguir (sem referências).
+            $rotated = imagerotate($image, $angle, 0);
+            $image = $rotated ?: $image;
+            unset($rotated);
         }
         if ($flip !== null) {
             imageflip($image, $flip);

@@ -302,3 +302,35 @@ it('marcar principal deixa sempre exactamente uma, mesmo repetida', function () 
 
     expect($this->article->images()->where('is_primary', true)->pluck('id')->all())->toBe([$b->id]);
 });
+
+it('processa uma foto no limite de 16 MP com rotação EXIF sem estourar os 128 MB do memory_limit', function () {
+    $original = ini_get('memory_limit');
+    $tmp = tempnam(sys_get_temp_dir(), 'mp16');
+
+    try {
+        // A geração do ficheiro de teste precisa de memória própria; liberta-se antes de medir.
+        ini_set('memory_limit', '512M');
+        $im = imagecreatetruecolor(4000, 4000);
+        imagefilledrectangle($im, 0, 0, 1999, 3999, imagecolorallocate($im, 200, 30, 30));
+        ob_start();
+        imagejpeg($im, null, 80);
+        $jpeg = (string) ob_get_clean();
+        unset($im);
+        $exif = "Exif\0\0".'MM'."\x00\x2a\x00\x00\x00\x08"."\x00\x01"."\x01\x12\x00\x03\x00\x00\x00\x01\x00\x06\x00\x00"."\x00\x00\x00\x00";
+        file_put_contents($tmp, substr($jpeg, 0, 2)."\xFF\xE1".pack('n', strlen($exif) + 2).$exif.substr($jpeg, 2));
+        unset($jpeg);
+
+        ini_set('memory_limit', '128M');
+        $file = new UploadedFile($tmp, 'foto.jpg', 'image/jpeg', null, true);
+
+        expect(StoreArticleImage::validationError($file))->toBeNull();
+
+        $image = (new StoreArticleImage)->handle($this->article, $file);
+
+        expect(ini_get('memory_limit'))->toBe('128M')
+            ->and(largura($image->screen_path))->toBe([1200, 1200, 'image/webp']);
+    } finally {
+        ini_set('memory_limit', $original);
+        @unlink($tmp);
+    }
+});

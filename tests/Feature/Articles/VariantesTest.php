@@ -256,3 +256,17 @@ it('recusa nomes de eixo com pontos ou repetidos em maiúsculas/minúsculas, em 
         ->call('save')
         ->assertHasFormErrors(['variant_axes' => 'Os nomes dos eixos não se podem repetir (maiúsculas e espaços nas pontas não contam).']);
 });
+
+it('recusa a combinação repetida quando a ordem por comprimento das chaves difere da alfabética', function () {
+    // O MySQL guarda as chaves do JSON por comprimento e depois alfabeticamente (Cor, Alfa); o formulário
+    // pode dar outra ordem. Sem o ksort do lado guardado as duas ordens não se igualam.
+    $artigo = Article::factory()->create(['variant_axes' => [
+        ['name' => 'Cor', 'values' => ['Azul', 'Preto']],
+        ['name' => 'Alfa', 'values' => ['X', 'Y']],
+    ]]);
+    ArticleVariant::factory()->for($artigo)->create(['options' => ['Alfa' => 'X', 'Cor' => 'Azul'], 'reference' => 'A']);
+
+    criar($artigo, ['options' => ['Cor' => 'Azul', 'Alfa' => 'X'], 'reference' => 'B', 'is_active' => true])->assertHasFormErrors();
+
+    expect($artigo->variants()->count())->toBe(1);
+});
