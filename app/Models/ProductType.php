@@ -24,7 +24,7 @@ class ProductType extends Model
 
     /**
      * Campos que um tipo novo traz por omissão (o admin pode apagá-los).
-     * TODO: lista a confirmar com o Pedro/cliente — não vem no PRD.
+     * Lista confirmada pelo Pedro em 2026-10-12 (D13).
      *
      * @var list<array{name: string, data_type: FieldType}>
      */

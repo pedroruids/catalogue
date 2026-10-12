@@ -146,3 +146,19 @@ Uma entrada por decisão (formato: `.claude/reference/adr-formato.md` do JOCA). 
 - Ao cliente final, forma neutra («Veja os artigos»), sem «tu».
 
 **Em aberto:** quem revoga uma partilha — o mockup diz «no backoffice», mas o vendedor não tem acesso (PRD §4).
+
+## D12: Campos dinâmicos — definições em tabela, valores em JSON no artigo
+
+**Data:** 2026-10-12 · **Estado:** aceite (revogável até ao portão da Onda 1) · **Decidido por:** agente de implementação (#2/#3)
+
+**Decisão:** as definições dos campos de cada tipo vivem na tabela `field_definitions` (FK para o tipo, `key` estável gerada do nome); os valores de cada artigo em `articles.field_values` (JSON), normalizados contra as definições do tipo. O tipo de dado de um campo já gravado não muda.
+
+**Porquê:** ordenação, unicidade e contagem de artigos afectados ao apagar um campo fazem-se com queries simples; a `key` estável evita valores órfãos ao renomear.
+
+## D13: Idioma `pt` e campos por omissão
+
+**Data:** 2026-10-12 · **Estado:** aceite · **Decidido por:** Pedro
+
+**Decisão:** `APP_LOCALE=pt` — o Filament não tem `pt_PT`, e o pacote `pt` é PT-PT («Guardar alterações»; o `pt_BR` diz «Salvar»). Os campos por omissão de um tipo novo são Material, Dimensões e Técnica de personalização.
+
+**Em aberto:** as mensagens de validação nativas do Laravel continuam em inglês (sem `lang/pt`).
