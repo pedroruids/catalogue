@@ -4,20 +4,26 @@ namespace App\Filament\Resources\Articles\RelationManagers;
 
 use App\Models\Article;
 use App\Models\ArticleVariant;
+use App\Models\PriceTier;
 use Closure;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 
 class VariantsRelationManager extends RelationManager
 {
@@ -74,6 +80,34 @@ class VariantsRelationManager extends RelationManager
             Toggle::make('is_active')
                 ->label('Activa')
                 ->default(true),
+            Repeater::make('priceTiers')
+                ->label('Escalões de preço')
+                ->helperText('Quantidade mínima → preço unitário em euros. Sem escalões, a variante fica «sob consulta».')
+                ->relationship()
+                ->defaultItems(0)
+                ->addActionLabel('Acrescentar escalão')
+                ->schema([
+                    TextInput::make('min_quantity')
+                        ->label('Quantidade mínima')
+                        ->required()
+                        ->integer()
+                        ->minValue(1)
+                        ->distinct()
+                        ->validationMessages(['distinct' => 'Já existe um escalão com esta quantidade mínima.']),
+                    TextInput::make('unit_price_cents')
+                        ->label('Preço unitário')
+                        ->suffix('€')
+                        ->required()
+                        ->formatStateUsing(fn (mixed $state): ?string => $state === null ? null : PriceTier::inputFromCents((int) $state))
+                        ->dehydrateStateUsing(fn (mixed $state): ?int => PriceTier::centsFromInput($state))
+                        ->rules([fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (PriceTier::centsFromInput($value) === null) {
+                                $fail('Indique um preço em euros, com até 2 casas decimais (ex.: 1,25).');
+                            }
+                        }]),
+                ])
+                ->columns(2)
+                ->columnSpanFull(),
         ]);
     }
 
@@ -104,6 +138,9 @@ class VariantsRelationManager extends RelationManager
                     ->label('Combinação')
                     ->state(fn (ArticleVariant $record): string => $record->optionsLabel()),
                 TextColumn::make('reference')->label('Referência'),
+                TextColumn::make('from_price')
+                    ->label('Preço desde')
+                    ->state(fn (ArticleVariant $record): string => ($cents = $record->fromPriceCents()) === null ? 'Sob consulta' : PriceTier::formatCents($cents)),
                 ToggleColumn::make('is_active')->label('Activa'),
             ])
             ->reorderable('position')
@@ -117,9 +154,32 @@ class VariantsRelationManager extends RelationManager
                     ->createAnother(false)
                     ->disabled(fn (): bool => ($this->getOwnerRecord()->variant_axes ?? []) === []),
             ])
+            ->modifyQueryUsing(fn ($query) => $query->with('priceTiers'))
             ->recordActions([
+                Action::make('copyTiers')
+                    ->label('Copiar escalões para as outras variantes')
+                    ->icon(Heroicon::OutlinedDocumentDuplicate)
+                    ->requiresConfirmation()
+                    ->modalDescription('Os escalões das outras variantes deste artigo serão substituídos pelos desta. Esta variante não é alterada.')
+                    ->action(function (ArticleVariant $record): void {
+                        $this->copyTiers($record);
+                        Notification::make()->title('Escalões copiados')->success()->send();
+                    }),
                 EditAction::make()->label('Editar'),
                 DeleteAction::make()->label('Apagar'),
             ]);
+    }
+
+    /** Substitui, em transacção, os escalões das outras variantes do artigo pelos de `$source`. */
+    private function copyTiers(ArticleVariant $source): void
+    {
+        $tiers = $source->priceTiers()->get(['min_quantity', 'unit_price_cents'])->map->only(['min_quantity', 'unit_price_cents']);
+
+        DB::transaction(function () use ($source, $tiers): void {
+            foreach ($source->article->variants()->whereKeyNot($source->getKey())->get() as $other) {
+                $other->priceTiers()->delete();
+                $other->priceTiers()->createMany($tiers->all());
+            }
+        });
     }
 }

@@ -86,6 +86,17 @@ class Article extends Model
     }
 
     /**
+     * Preço «desde»: menor preço unitário (cêntimos) entre as variantes activas, ou null (sob consulta).
+     * Carregar `variants.priceTiers` antes evita N+1.
+     */
+    public function fromPriceCents(): ?int
+    {
+        $variants = $this->relationLoaded('variants') ? $this->variants : $this->variants()->with('priceTiers')->get();
+
+        return $variants->where('is_active', true)->map(fn (ArticleVariant $v): ?int => $v->fromPriceCents())->filter(fn (?int $c): bool => $c !== null)->min();
+    }
+
+    /**
      * Razão pela qual estes eixos não podem substituir os actuais, ou null se podem.
      * Retirar um eixo/valor em uso por variantes é recusado, e acrescentar um eixo deixaria
      * as variantes existentes sem valor nele.
