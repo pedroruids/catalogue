@@ -48,7 +48,7 @@ new #[Layout('components.app.layout')] #[Title('Partilhar com o cliente')] class
             return;
         }
 
-        $this->validate(['mode' => ['required', Rule::enum(ShareMode::class)]], attributes: ['mode' => 'o que o cliente vê']);
+        $this->validate(['mode' => ['required', Rule::enum(ShareMode::class)]], messages: ['mode.required' => 'Escolha o que o cliente vê.', 'mode.enum' => 'Escolha um dos três modos: com preços, sem preços ou só imagens.']);
 
         $ids = Selection::ids();
         $mode = ShareMode::from($this->mode);

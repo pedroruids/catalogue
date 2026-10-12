@@ -191,6 +191,7 @@ it('a página pública não abre sessão nem envia cookies', function (string $e
         ->and($response->headers->has('Set-Cookie'))->toBeFalse();
 })->with(['activa', 'revogada', 'inexistente']);
 
-it('um token com quebra de linha no fim é recusado pelo formato', function () {
-    $this->get('/p/'.rawurlencode(str_repeat('A', 21)."\n"))->assertNotFound();
+// Higiene: com \A..\z o formato recusa o \n final; com ^..$ daria 404 na mesma (o hash não coincide), por isso o efeito não se distingue por HTTP.
+it('um token com quebra de linha no fim dá 404', function () {
+    $this->get('/p/'.rawurlencode(str_repeat('A', 22)."\n"))->assertNotFound();
 });

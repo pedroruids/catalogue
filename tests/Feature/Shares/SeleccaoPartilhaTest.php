@@ -118,7 +118,8 @@ it('recusa validade e modo forjados, por campo', function () {
 
     Livewire::test('pages::shares.create')->set('days', 15)->call('generate')
         ->assertHasErrors(['days'])->assertSee('A validade tem de ser de 7, 30 ou 90 dias.');
-    Livewire::test('pages::shares.create')->set('mode', 'xpto')->call('generate')->assertHasErrors(['mode']);
+    Livewire::test('pages::shares.create')->set('mode', 'xpto')->call('generate')
+        ->assertHasErrors(['mode'])->assertSee('Escolha um dos três modos: com preços, sem preços ou só imagens.');
 
     expect(Share::count())->toBe(0);
 });
