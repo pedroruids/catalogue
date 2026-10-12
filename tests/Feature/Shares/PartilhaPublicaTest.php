@@ -175,3 +175,22 @@ it('apagar um artigo tira-o da partilha', function () {
 
     expect($share->articles()->pluck('articles.id')->all())->toBe([$b->id]);
 });
+
+it('a página pública não abre sessão nem envia cookies', function (string $estado) {
+    $article = shareArticle('Caneca Azul');
+    ['share' => $share, 'url' => $url] = shareOf([$article], ShareMode::WithoutPrices);
+
+    if ($estado === 'revogada') {
+        $share->forceFill(['revoked_at' => now()])->save();
+    }
+    $target = $estado === 'inexistente' ? route('shares.show', ['token' => str_repeat('A', 22)]) : $url;
+
+    $response = $this->get($target);
+
+    expect($response->headers->getCookies())->toBeEmpty()
+        ->and($response->headers->has('Set-Cookie'))->toBeFalse();
+})->with(['activa', 'revogada', 'inexistente']);
+
+it('um token com quebra de linha no fim é recusado pelo formato', function () {
+    $this->get('/p/'.rawurlencode(str_repeat('A', 21)."\n"))->assertNotFound();
+});

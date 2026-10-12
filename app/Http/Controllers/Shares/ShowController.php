@@ -14,7 +14,7 @@ use Illuminate\Http\Response;
 final class ShowController
 {
     /** Formato do token emitido por CreateShare: 22 caracteres base64url. */
-    private const TOKEN_PATTERN = '/^[A-Za-z0-9_-]{22}$/';
+    private const TOKEN_PATTERN = '/\A[A-Za-z0-9_-]{22}\z/';
 
     public function __invoke(string $token): Response
     {
