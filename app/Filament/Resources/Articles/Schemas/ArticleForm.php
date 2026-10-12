@@ -4,10 +4,14 @@ namespace App\Filament\Resources\Articles\Schemas;
 
 use App\Enums\ArticleStatus;
 use App\Enums\FieldType;
+use App\Models\Article;
 use App\Models\FieldDefinition;
 use App\Models\ProductType;
+use Closure;
 use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -58,6 +62,37 @@ class ArticleForm
                     ->visible(fn (Get $get): bool => filled($get('product_type_id')))
                     ->schema(fn (Get $get): array => self::fieldComponents($get('product_type_id')))
                     ->columns(2),
+                Section::make('Variantes')
+                    ->description('Os eixos em que o artigo varia (ex.: Cor, Tamanho) e os valores de cada um. As variantes criam-se depois, no separador «Variantes».')
+                    ->schema([
+                        Repeater::make('variant_axes')
+                            ->hiddenLabel()
+                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                            ->collapsible()
+                            ->addActionLabel('Adicionar eixo')
+                            ->defaultItems(0)
+                            ->rules([fn (?Article $record): Closure => function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                                $problem = $record?->variantAxesProblem(is_array($value) ? $value : []);
+                                if ($problem !== null) {
+                                    $fail($problem);
+                                }
+                            }])
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Eixo')
+                                    ->placeholder('Cor')
+                                    ->required()
+                                    ->maxLength(100)
+                                    // O nome serve de caminho no formulário das variantes: sem pontos.
+                                    ->notRegex('/\./')
+                                    ->distinct(),
+                                TagsInput::make('values')
+                                    ->label('Valores')
+                                    ->placeholder('Escreva e carregue Enter')
+                                    ->required(),
+                            ])
+                            ->columns(2),
+                    ]),
             ]);
     }
 
