@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -71,7 +72,13 @@ class ArticleImage extends Model
     /** Marca esta como principal e desmarca as restantes do artigo. */
     public function makePrimary(): void
     {
-        self::query()->where('article_id', $this->article_id)->where('id', '!=', $this->id)->update(['is_primary' => false]);
-        $this->forceFill(['is_primary' => true])->save();
+        DB::transaction(function (): void {
+            // Serializa cliques concorrentes no mesmo artigo.
+            Article::query()->whereKey($this->article_id)->lockForUpdate()->first();
+            self::query()->where('article_id', $this->article_id)->where('id', '!=', $this->id)->update(['is_primary' => false]);
+            self::query()->whereKey($this->id)->update(['is_primary' => true]);
+            // O modelo pode estar desactualizado: fixa o estado em vez de depender do dirty-check do save().
+            $this->setAttribute('is_primary', true)->syncOriginalAttribute('is_primary');
+        });
     }
 }

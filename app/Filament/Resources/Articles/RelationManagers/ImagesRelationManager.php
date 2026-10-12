@@ -5,17 +5,22 @@ namespace App\Filament\Resources\Articles\RelationManagers;
 use App\Actions\StoreArticleImage;
 use App\Models\Article;
 use App\Models\ArticleImage;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Support\Exceptions\Halt;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
+use InvalidArgumentException;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ImagesRelationManager extends RelationManager
@@ -40,6 +45,13 @@ class ImagesRelationManager extends RelationManager
                 ->maxSize(10240)
                 ->storeFiles(false)
                 ->required()
+                ->rules([
+                    fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                        if ($value instanceof UploadedFile && ($erro = StoreArticleImage::validationError($value)) !== null) {
+                            $fail($erro);
+                        }
+                    },
+                ])
                 ->validationMessages([
                     'max' => 'Cada imagem pode ter no máximo 10 MB.',
                     'mimetypes' => 'Só são aceites imagens JPEG, PNG ou WebP.',
@@ -65,16 +77,20 @@ class ImagesRelationManager extends RelationManager
                     ->using(function (array $data, ImagesRelationManager $livewire): Model {
                         /** @var Article $article */
                         $article = $livewire->getOwnerRecord();
-                        $store = app(StoreArticleImage::class);
-                        $last = null;
 
-                        /** @var array<int, TemporaryUploadedFile> $files */
+                        /** @var non-empty-array<int, TemporaryUploadedFile> $files */
                         $files = $data['files'];
-                        foreach ($files as $file) {
-                            $last = $store->handle($article, $file);
-                        }
 
-                        return $last ?? new ArticleImage;
+                        try {
+                            return app(StoreArticleImage::class)->handleMany($article, $files);
+                        } catch (InvalidArgumentException) {
+                            Notification::make()
+                                ->title('Não foi possível guardar as imagens')
+                                ->body('Uma das imagens não pôde ser processada. Nenhuma foi guardada.')
+                                ->danger()
+                                ->send();
+                            throw (new Halt)->rollBackDatabaseTransaction(true);
+                        }
                     }),
             ])
             ->recordActions([
