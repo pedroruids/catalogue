@@ -32,11 +32,36 @@ class FieldDefinition extends Model
 
     protected static function booted(): void
     {
+        // Apagar o campo apaga os valores que os artigos tinham nele.
+        static::deleted(function (self $field): void {
+            Article::query()
+                ->where('product_type_id', $field->product_type_id)
+                ->whereNotNull('field_values->'.$field->key)
+                ->chunkById(100, function ($articles) use ($field): void {
+                    foreach ($articles as $article) {
+                        $values = $article->field_values ?? [];
+                        unset($values[$field->key]);
+                        $article->update(['field_values' => $values]);
+                    }
+                });
+        });
+
         static::creating(function (self $field): void {
             if (blank($field->key)) {
                 $field->key = $field->makeUniqueKey();
             }
         });
+    }
+
+    /**
+     * Quantos artigos do tipo já têm valor neste campo.
+     */
+    public function articlesWithValueCount(): int
+    {
+        return Article::query()
+            ->where('product_type_id', $this->product_type_id)
+            ->whereNotNull('field_values->'.$this->key)
+            ->count();
     }
 
     /**

@@ -35,10 +35,47 @@ class ProductType extends Model
     ];
 
     /**
+     * @return HasMany<Article, $this>
+     */
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class);
+    }
+
+    /**
      * @return HasMany<FieldDefinition, $this>
      */
     public function fieldDefinitions(): HasMany
     {
         return $this->hasMany(FieldDefinition::class)->orderBy('position')->orderBy('id');
+    }
+
+    /**
+     * Valores a gravar num artigo deste tipo: só as chaves dos campos do tipo, com o tipo de dado certo
+     * e sem valores vazios. É o que faz os valores de campos inexistentes no tipo "perderem-se".
+     *
+     * @param  array<string, mixed>|null  $values
+     * @return array<string, mixed>
+     */
+    public function normalizeFieldValues(?array $values): array
+    {
+        $clean = [];
+
+        foreach ($this->fieldDefinitions as $field) {
+            $value = $values[$field->key] ?? null;
+
+            $value = match ($field->data_type) {
+                FieldType::Text => is_scalar($value) && trim((string) $value) !== '' ? trim((string) $value) : null,
+                FieldType::Number => is_numeric($value) ? $value + 0 : null,
+                FieldType::Boolean => $value === null ? null : filter_var($value, FILTER_VALIDATE_BOOLEAN),
+                FieldType::Select => is_string($value) && in_array($value, $field->options ?? [], true) ? $value : null,
+            };
+
+            if ($value !== null) {
+                $clean[$field->key] = $value;
+            }
+        }
+
+        return $clean;
     }
 }
