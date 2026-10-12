@@ -175,7 +175,7 @@ new #[Layout('components.app.layout')] #[Title('Artigo')] class extends Componen
             <div class="flex min-w-0 flex-[1_1_340px] flex-col gap-6">
                 <div class="flex flex-col gap-1.5">
                     <span class="text-[13px] font-bold tracking-[0.04em] text-muted uppercase">{{ $article->productType->name }}</span>
-                    <h1 class="font-display text-[30px] leading-[1.15] font-semibold text-pretty">{{ $article->name }}</h1>
+                    <h1 class="font-display text-[30px] leading-[1.15] font-semibold text-pretty [overflow-wrap:anywhere]">{{ $article->name }}</h1>
                     <span class="text-sm text-muted tabular-nums">Ref. {{ $article->reference }}</span>
                 </div>
 
@@ -189,7 +189,7 @@ new #[Layout('components.app.layout')] #[Title('Artigo')] class extends Componen
                                     <button type="button" x-on:click="escolher(@js($axis['name']), @js($value))"
                                             x-bind:aria-pressed="(sel[@js($axis['name'])] === @js($value)).toString()" aria-pressed="false"
                                             x-bind:class="sel[@js($axis['name'])] === @js($value) ? 'border-brand bg-brand font-bold text-bg' : 'border-border-input bg-surface font-semibold text-text'"
-                                            class="h-11 min-w-[88px] rounded-lg px-3.5 text-[15px] border-[1.5px]">{{ $value }}</button>
+                                            class="min-h-11 max-w-full min-w-[88px] rounded-lg px-3.5 py-2 text-[15px] border-[1.5px] [overflow-wrap:anywhere]">{{ $value }}</button>
                                 @endforeach
                             </div>
                         </div>
@@ -251,8 +251,8 @@ new #[Layout('components.app.layout')] #[Title('Artigo')] class extends Componen
                         <dl class="border-t border-border">
                             @foreach ($fields as $label => $value)
                                 <div class="grid grid-cols-[minmax(110px,40%)_1fr] gap-3 border-b border-border py-[11px] text-[15px] leading-[1.45]">
-                                    <dt class="text-muted">{{ $label }}</dt>
-                                    <dd class="text-pretty text-text">{{ $value }}</dd>
+                                    <dt class="min-w-0 text-muted [overflow-wrap:anywhere]">{{ $label }}</dt>
+                                    <dd class="min-w-0 text-pretty text-text [overflow-wrap:anywhere]">{{ $value }}</dd>
                                 </div>
                             @endforeach
                         </dl>

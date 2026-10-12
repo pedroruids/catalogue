@@ -153,14 +153,32 @@ it('o voltar repõe a pesquisa e o filtro da lista', function () {
 });
 
 it('abre o artigo sem consultas a mais com muitas variantes', function () {
-    $article = Article::factory()->published()->create(['variant_axes' => [['name' => 'Cor', 'values' => ['A']]]]);
-    foreach (range(1, 12) as $n) {
-        $v = ArticleVariant::factory()->create(['article_id' => $article->id, 'options' => ['Cor' => "C{$n}"]]);
-        PriceTier::factory()->count(3)->sequence(['min_quantity' => 1], ['min_quantity' => 10], ['min_quantity' => 100])->create(['article_variant_id' => $v->id]);
-    }
+    $queries = function (int $variants): int {
+        $article = Article::factory()->published()->create(['variant_axes' => [['name' => 'Cor', 'values' => ['A']]]]);
+        foreach (range(1, $variants) as $n) {
+            $v = ArticleVariant::factory()->create(['article_id' => $article->id, 'options' => ['Cor' => "C{$n}"]]);
+            PriceTier::factory()->count(3)->sequence(['min_quantity' => 1], ['min_quantity' => 10], ['min_quantity' => 100])->create(['article_variant_id' => $v->id]);
+        }
 
-    DB::enableQueryLog();
-    $this->actingAs(User::factory()->create())->get(route('articles.show', $article))->assertOk();
+        DB::flushQueryLog();
+        DB::enableQueryLog();
+        $this->get(route('articles.show', $article))->assertOk()->assertSee('€', false);
+        DB::disableQueryLog();
 
-    expect(count(DB::getQueryLog()))->toBeLessThan(25);
+        return count(DB::getQueryLog());
+    };
+
+    $this->actingAs(User::factory()->create());
+
+    // As consultas não crescem com o número de variantes (escalões carregados de uma vez).
+    expect($queries(12))->toBe($queries(1));
+});
+
+it('o voltar ignora um referer que não é a lista', function () {
+    $article = artigoComVariantes();
+
+    $this->actingAs(User::factory()->create())->withHeader('referer', url('/settings/profile?q=caneca&tipo=3'))
+        ->get(route('articles.show', $article))
+        ->assertSee('href="'.route('articles.index').'"', false)
+        ->assertDontSee('q=caneca', false);
 });
