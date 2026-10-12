@@ -67,7 +67,8 @@
     }
 
     /* Ícones Flux (Heroicons, traço 1.5) passam a traço 2 px, como nos mockups */
-    [data-proto] svg[data-flux-icon][stroke-width] {
+    [data-proto] svg[data-flux-icon][stroke-width],
+    [data-app] svg[data-flux-icon][stroke-width] {
         stroke-width: 2;
     }
 }
