@@ -12,7 +12,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 $ecra = fn (string $ecra, array $dados = []) => function (Request $request) use ($ecra, $dados) {
-    return view('prototipo.'.$ecra, [
+    $vista = match ($ecra) {
+        'indice' => 'prototipo.indice',
+        'login' => 'prototipo.login',
+        'recuperar' => 'prototipo.recuperar',
+        'artigos' => 'prototipo.artigos',
+        'artigo' => 'prototipo.artigo',
+        'partilhar' => 'prototipo.partilhar',
+        'offline' => 'prototipo.offline',
+        'publica' => 'prototipo.publica',
+        default => abort(404),
+    };
+
+    return view($vista, [
         'estado' => PrototipoDados::estado($ecra, $request->query('estado')),
         'estados' => PrototipoDados::estados($ecra),
         ...$dados,
