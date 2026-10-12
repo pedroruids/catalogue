@@ -161,7 +161,7 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Registo público desligado: as contas são criadas pelo admin no backoffice.
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([
