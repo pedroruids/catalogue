@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Enums\Role;
+use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -36,7 +37,10 @@ class UserForm
                     ->options(Role::class)
                     ->default(Role::Vendedor)
                     ->required()
-                    ->native(false),
+                    ->native(false)
+                    // O próprio papel não se muda (o servidor também o ignora).
+                    ->disabled(fn (?User $record): bool => $record !== null && $record->is(auth()->user()))
+                    ->dehydrated(fn (?User $record): bool => $record === null || ! $record->is(auth()->user())),
             ]);
     }
 }

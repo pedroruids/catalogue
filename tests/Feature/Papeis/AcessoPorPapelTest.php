@@ -5,6 +5,7 @@ use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\User;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -106,4 +107,43 @@ it('o admin muda o papel de um utilizador na edição', function () {
         ->assertHasNoFormErrors();
 
     expect($v->refresh()->role)->toBe(Role::Admin);
+});
+
+it('o admin não consegue mudar o próprio papel', function () {
+    $admin = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    Livewire::test(EditUser::class, ['record' => $admin->getRouteKey()])
+        ->fillForm(['role' => 'vendedor'])
+        ->call('save');
+
+    expect($admin->refresh()->role)->toBe(Role::Admin);
+});
+
+it('um admin pode despromover outro admin (fica sempre pelo menos ele)', function () {
+    $admin = User::factory()->admin()->create();
+    $outro = User::factory()->admin()->create();
+    $this->actingAs($admin);
+
+    Livewire::test(EditUser::class, ['record' => $outro->getRouteKey()])
+        ->fillForm(['role' => 'vendedor'])
+        ->call('save');
+
+    expect($outro->refresh()->role)->toBe(Role::Vendedor)
+        ->and(User::query()->where('role', Role::Admin)->count())->toBe(1);
+});
+
+it('recusa despromover o único admin (pedido forjado de outro utilizador)', function () {
+    $unico = User::factory()->admin()->create();
+    $this->actingAs($unico);
+    $page = new EditUser;
+
+    $metodo = new ReflectionMethod($page, 'handleRecordUpdate');
+
+    // Defesa em profundidade: quem actua não é o próprio (senão o papel seria ignorado).
+    $this->actingAs(User::factory()->create());
+    expect(fn () => $metodo->invoke($page, $unico, ['name' => $unico->name, 'role' => 'vendedor']))
+        ->toThrow(Halt::class);
+
+    expect($unico->refresh()->role)->toBe(Role::Admin);
 });
