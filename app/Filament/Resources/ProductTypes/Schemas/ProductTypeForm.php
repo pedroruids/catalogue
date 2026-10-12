@@ -36,7 +36,9 @@ class ProductTypeForm
                             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                             ->collapsible()
                             ->deleteAction(fn (Action $action): Action => $action
-                                ->requiresConfirmation(fn (array $arguments): bool => self::affectedArticles($arguments) > 0)
+                                ->requiresConfirmation()
+                                // Títulos/descrições abrem o modal sempre; só se mostra quando o campo tem valores.
+                                ->modalHidden(fn (array $arguments): bool => self::affectedArticles($arguments) === 0)
                                 ->modalHeading('Apagar campo com valores')
                                 ->modalDescription(fn (array $arguments): string => self::affectedArticles($arguments) === 1
                                     ? 'Este campo tem valores em 1 artigo. Ao gravar, esse valor é apagado.'

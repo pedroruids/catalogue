@@ -150,7 +150,9 @@ it('apagar um campo sem valores não pede confirmação', function () {
     $item = 'record-'.$campo->id;
     $form->mountFormComponentAction('fieldDefinitions', 'delete', ['item' => $item]);
 
-    expect($form->instance()->getMountedAction()->isConfirmationRequired())->toBeFalse();
+    // sem valores o modal não monta e o campo sai logo do formulário (caminho do clique).
+    expect($form->instance()->getMountedAction())->toBeNull()
+        ->and(array_keys($form->get('data.fieldDefinitions')))->not->toContain($item);
 });
 
 it('um tipo com artigos não se apaga; sem artigos apaga-se', function () {
