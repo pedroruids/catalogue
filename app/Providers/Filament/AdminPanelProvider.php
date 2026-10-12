@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,8 +30,12 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                // Mesmo valor que --color-brand em resources/css/tokens.css (prendido por tests/Unit/TemaTest.php)
+                'primary' => Color::hex('#1E3A5F'),
             ])
+            // Sem URL: o @font-face vem no tema (tokens.css), servido localmente — nada de Bunny
+            ->font('Figtree Variable', provider: LocalFontProvider::class)
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
