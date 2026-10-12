@@ -49,7 +49,7 @@ class StoreArticleImage
             return 'A imagem tem demasiados píxeis (máximo '.(self::MAX_PIXELS / 1_000_000).' megapíxeis).';
         }
 
-        // Descodifica para provar que o corpo é legível (o cabeçalho sozinho não apanha JPEG truncado) e liberta já.
+        // Descodifica para recusar ficheiros ilegíveis (ex.: cabeçalho cortado) e liberta já. ⚠ Um JPEG cortado no corpo ainda descodifica em parte e passa.
         $decoded = @imagecreatefromstring((string) file_get_contents($path));
 
         if ($decoded === false) {
