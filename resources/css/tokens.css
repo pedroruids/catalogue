@@ -1,0 +1,42 @@
+/* Tokens Maravilha — fonte única (D9). Importado pela app (app.css) e pelo tema Filament
+   (filament/admin/theme.css). Fontes servidas localmente via @fontsource (OFL), sem pedidos a terceiros. */
+@import '@fontsource-variable/figtree/wght.css';
+@import '@fontsource-variable/bricolage-grotesque/wght.css';
+
+@theme {
+    /* Tipografia (D9): Figtree no corpo, Bricolage Grotesque nos títulos */
+    --font-sans: 'Figtree Variable', 'Figtree', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Figtree Variable', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+
+    /* Tokens Maravilha — docs/design_handoff_maravilha_app/README.md §Design tokens */
+    --color-brand: #1E3A5F;
+    --color-brand-hover: #16304F;
+    /* O acento #C9A227 chama-se `gold`: `--color-accent` é o contrato do Flux (botão primário = brand).
+       Só fundo do interruptor «com preços» e anel de foco — nunca texto sobre claro (2.31:1). */
+    --color-gold: #C9A227;
+    --color-bg: #FAFAF7;
+    --color-surface: #FFFFFF;
+    --color-surface-warm: #F3EFE6;
+    --color-text: #14202E;
+    --color-muted: #5A6472;
+    --color-muted-2: #4F5967;
+    --color-border: #E3DED3;
+    --color-border-soft: #ECE7DC;
+    --color-border-input: #CFC8BA;
+    --color-placeholder-logo: #B9B2A3;
+    --color-img-placeholder: #EFEAE0;
+    --color-img-label: #6B6458;
+    --color-skeleton: #ECE7DC;
+    --color-skeleton-2: #F1EDE4;
+    --color-disabled: #E4E0D7;
+    --color-disabled-text: #4F5967;
+    --color-error: #9E2B25;
+    --color-error-bg: #FBEDEA;
+    --color-error-border: #E7C1BB;
+    --color-warn-bg: #F6EBC8;
+    --color-warn-border: #E9D891;
+    --color-success: #2E6A47;
+    --color-success-bg: #E6F0EA;
+
+    --radius-brand: 0.5rem;
+}

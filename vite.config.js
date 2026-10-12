@@ -1,6 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
 export default defineConfig({
@@ -11,16 +10,9 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/passkeys.js',
                 'resources/js/prototipo.js',
+                'resources/css/filament/admin/theme.css',
             ],
             refresh: true,
-            fonts: [
-                bunny('Bricolage Grotesque', {
-                    weights: [500, 600, 700],
-                }),
-                bunny('Figtree', {
-                    weights: [400, 500, 600, 700],
-                }),
-            ],
         }),
         tailwindcss(),
     ]),
