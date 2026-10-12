@@ -86,6 +86,22 @@ class VariantsRelationManager extends RelationManager
                 ->label('Escalões de preço')
                 ->helperText('Quantidade mínima → preço unitário em euros. Sem escalões, a variante fica «sob consulta».')
                 ->relationship()
+                // Apagar e recriar: actualizar no lugar chocava com o índice único ao trocar quantidades (1↔2).
+                ->saveRelationshipsUsing(function (Repeater $component, ?array $state): void {
+                    $variant = $component->getRecord();
+
+                    if (! $variant instanceof ArticleVariant) {
+                        return;
+                    }
+
+                    DB::transaction(function () use ($variant, $state): void {
+                        $variant->priceTiers()->delete();
+                        $variant->priceTiers()->createMany(collect($state)->map(fn (array $tier): array => [
+                            'min_quantity' => $tier['min_quantity'],
+                            'unit_price_cents' => PriceTier::centsFromInput($tier['unit_price_cents']),
+                        ])->values()->all());
+                    });
+                })
                 ->defaultItems(0)
                 ->addActionLabel('Acrescentar escalão')
                 ->schema([
@@ -94,6 +110,7 @@ class VariantsRelationManager extends RelationManager
                         ->required()
                         ->integer()
                         ->minValue(1)
+                        ->maxValue(PriceTier::MAX_MIN_QUANTITY)
                         ->distinct()
                         ->validationMessages(['distinct' => 'Já existe um escalão com esta quantidade mínima.']),
                     TextInput::make('unit_price_cents')
@@ -103,8 +120,14 @@ class VariantsRelationManager extends RelationManager
                         ->formatStateUsing(fn (mixed $state): ?string => $state === null ? null : PriceTier::inputFromCents((int) $state))
                         ->dehydrateStateUsing(fn (mixed $state): ?int => PriceTier::centsFromInput($state))
                         ->rules([fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
-                            if (PriceTier::centsFromInput($value) === null) {
+                            $cents = PriceTier::centsFromInput($value);
+
+                            if ($cents === null) {
                                 $fail('Indique um preço em euros, com até 2 casas decimais (ex.: 1,25).');
+                            } elseif ($cents === 0) {
+                                $fail('O preço tem de ser superior a 0,00 €. Para «sob consulta», não defina escalões.');
+                            } elseif ($cents > PriceTier::MAX_UNIT_PRICE_CENTS) {
+                                $fail('O preço máximo é '.PriceTier::formatCents(PriceTier::MAX_UNIT_PRICE_CENTS).'.');
                             }
                         }]),
                 ])
@@ -161,6 +184,7 @@ class VariantsRelationManager extends RelationManager
                 Action::make('copyTiers')
                     ->label('Copiar escalões para as outras variantes')
                     ->icon(Heroicon::OutlinedDocumentDuplicate)
+                    ->visible(fn (ArticleVariant $record): bool => $record->priceTiers->isNotEmpty() && $record->article->variants()->whereKeyNot($record->getKey())->exists())
                     ->requiresConfirmation()
                     ->modalDescription('Os escalões das outras variantes deste artigo serão substituídos pelos desta. Esta variante não é alterada.')
                     ->action(function (ArticleVariant $record): void {

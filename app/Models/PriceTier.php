@@ -22,6 +22,12 @@ use Illuminate\Support\Number;
 #[Fillable(['article_variant_id', 'min_quantity', 'unit_price_cents'])]
 class PriceTier extends Model
 {
+    /** Tecto de negócio do preço unitário: 1 000 000,00 € (a coluna aguenta 4 294 967 295 cêntimos). */
+    public const MAX_UNIT_PRICE_CENTS = 100_000_000;
+
+    /** Tecto da quantidade mínima de um escalão. */
+    public const MAX_MIN_QUANTITY = 1_000_000;
+
     /** @use HasFactory<PriceTierFactory> */
     use HasFactory;
 
@@ -44,7 +50,7 @@ class PriceTier extends Model
     {
         $clean = str_replace([' ', "\u{00A0}", '€'], '', (string) $input);
 
-        if (! preg_match('/^(\d+)(?:[.,](\d{1,2}))?$/', $clean, $m)) {
+        if (! preg_match('/^(\d{1,12})(?:[.,](\d{1,2}))?$/', $clean, $m)) {
             return null;
         }
 
