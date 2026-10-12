@@ -183,7 +183,7 @@ new #[Layout('components.app.layout')] #[Title('Artigo')] class extends Componen
                 @if ($variants->isNotEmpty() && $axes !== [])
                     @foreach ($axes as $n => $axis)
                         <div class="flex flex-col gap-2.5" wire:key="eixo-{{ $n }}">
-                            <span id="eixo-{{ $n }}" class="text-sm font-bold">{{ $axis['name'] }}: <span class="font-medium" x-text="sel[@js($axis['name'])] ?? ''"></span></span>
+                            <span id="eixo-{{ $n }}" class="text-sm font-bold [overflow-wrap:anywhere]">{{ $axis['name'] }}: <span class="font-medium" x-text="sel[@js($axis['name'])] ?? ''"></span></span>
                             <div class="flex flex-wrap gap-2" role="group" aria-labelledby="eixo-{{ $n }}">
                                 @foreach ($axis['values'] as $value)
                                     <button type="button" x-on:click="escolher(@js($axis['name']), @js($value))"
@@ -206,7 +206,7 @@ new #[Layout('components.app.layout')] #[Title('Artigo')] class extends Componen
                             @foreach ($variants as $i => $variant)
                                 <div wire:key="variante-{{ $variant->id }}" x-show="indice === {{ $i }}" @if ($i > 0) x-cloak @endif class="flex flex-col gap-2.5">
                                     @if ($variant->options !== [])
-                                        <span class="text-sm text-muted">{{ $variant->optionsLabel() }} · preço unitário</span>
+                                        <span class="min-w-0 text-sm text-muted [overflow-wrap:anywhere]">{{ $variant->optionsLabel() }} · preço unitário</span>
                                     @endif
                                     @if ($variant->priceTiers->isNotEmpty())
                                         <div class="overflow-hidden rounded-lg border border-border bg-surface">

@@ -12,7 +12,7 @@
     <title>{{ filled($title ?? null) ? $title.' · ' : '' }}{{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body data-app class="min-h-dvh bg-bg font-sans text-text antialiased">
+<body data-app class="min-h-dvh bg-bg font-sans text-text antialiased [overflow-wrap:anywhere]">
     <a href="#conteudo" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2">Saltar para o conteúdo</a>
 
     <div id="conteudo">
