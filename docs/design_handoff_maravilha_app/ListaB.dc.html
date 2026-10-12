@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#FAFAF7}a{color:#1E3A5F}a:hover{color:#14202E}</style></helmet>
+<div style="min-height:680px;background:#FAFAF7;font-family:'Figtree',sans-serif;color:#14202E;box-sizing:border-box">
+  <dc-import name="AppBarB" precos="{{ precos }}" on-precos="{{ togglePrecos }}" sel="{{ selCount }}" offline="{{ offline }}" faixa="{{ faixa }}" hint-size="100%,96px"></dc-import>
+  <main style="max-width:1240px;margin:0 auto;padding:20px 16px 40px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600">Artigos</h1>
+      <span style="font-size:14px;color:#5A6472">{{ contagem }}</span>
+    </div>
+    <div style="position:relative">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A6472" stroke-width="2" stroke-linecap="round" style="position:absolute;left:14px;top:14px"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+      <input type="search" placeholder="Pesquisar por nome ou referência" defaultValue="{{ q }}" disabled="{{ semFiltros }}" style="height:48px;padding:0 14px 0 44px;border:1.5px solid #CFC8BA;border-radius:8px;background:#FFFFFF;font-family:'Figtree',sans-serif;font-size:16px;color:#14202E;width:100%;box-sizing:border-box;outline:none" style-focus="border-color:#1E3A5F;box-shadow:0 0 0 3px rgba(201,162,39,0.35)">
+    </div>
+    <div style="display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px">
+      <sc-for list="{{ filtros }}" as="f" hint-placeholder-count="4">
+        <sc-if value="{{ f.inactivo }}" hint-placeholder-val="{{ true }}">
+          <button disabled="{{ f.off }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 12px 0 14px;border:1px solid #CFC8BA;border-radius:999px;background:#FFFFFF;color:#14202E;font-family:'Figtree',sans-serif;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0">
+            {{ f.label }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+        </sc-if>
+        <sc-if value="{{ f.activo }}" hint-placeholder-val="{{ false }}">
+          <button style="display:flex;align-items:center;gap:6px;height:40px;padding:0 10px 0 14px;border:1px solid #1E3A5F;border-radius:999px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0">
+            {{ f.label }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+          </button>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ mostraGrelha }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+        <sc-for list="{{ itens }}" as="it" hint-placeholder-count="8">
+          <article style="background:#FFFFFF;border:1px solid #E3DED3;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0">
+            <div style="aspect-ratio:1/1;background-color:#EFEAE0;background-image:repeating-linear-gradient(135deg,transparent 0 10px,rgba(20,32,46,0.035) 10px 20px);display:flex;align-items:center;justify-content:center;padding:8px;box-sizing:border-box">
+              <span style="font-size:12px;color:#6B6458;text-align:center">{{ it.foto }}</span>
+            </div>
+            <div style="padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1">
+              <h2 style="margin:0;font-size:15px;line-height:1.3;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty">{{ it.nome }}</h2>
+              <span style="font-size:13px;color:#5A6472;font-variant-numeric:tabular-nums">{{ it.ref }}</span>
+              <sc-if value="{{ precos }}" hint-placeholder-val="{{ true }}">
+                <span style="font-size:14px;color:#14202E">desde <strong style="font-weight:700;color:#1E3A5F">{{ it.preco }}</strong></span>
+              </sc-if>
+              <div style="flex:1;min-height:6px"></div>
+              <sc-if value="{{ it.podeJuntar }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ it.toggle }}" style="display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border:1.5px solid #1E3A5F;border-radius:8px;background:#FFFFFF;color:#1E3A5F;font-family:'Figtree',sans-serif;font-size:14px;font-weight:700;cursor:pointer" style-hover="background:#F3F5F8">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+                  Juntar
+                </button>
+              </sc-if>
+              <sc-if value="{{ it.naSel }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ it.toggle }}" style="display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border:1.5px solid #1E3A5F;border-radius:8px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:14px;font-weight:700;cursor:pointer">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg>
+                  Na selecção
+                </button>
+              </sc-if>
+              <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+                <button disabled title="Juntar precisa de rede" style="display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border:1.5px solid #E4E0D7;border-radius:8px;background:#E4E0D7;color:#4F5967;font-family:'Figtree',sans-serif;font-size:13px;font-weight:700;cursor:not-allowed">Precisa de rede</button>
+              </sc-if>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ carregar }}" hint-placeholder-val="{{ false }}">
+      <div aria-busy="true" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+        <sc-for list="{{ esqueletos }}" as="s" hint-placeholder-count="8">
+          <div style="background:#FFFFFF;border:1px solid #E3DED3;border-radius:8px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="aspect-ratio:1/1;background:#ECE7DC"></div>
+            <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
+              <div style="height:14px;width:90%;border-radius:4px;background:#ECE7DC"></div>
+              <div style="height:14px;width:60%;border-radius:4px;background:#ECE7DC"></div>
+              <div style="height:12px;width:40%;border-radius:4px;background:#F1EDE4"></div>
+              <div style="height:44px;border-radius:8px;background:#F1EDE4;margin-top:6px"></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ vazio }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:56px 16px">
+        <div style="width:64px;height:64px;border-radius:50%;background:#F3EFE6;display:flex;align-items:center;justify-content:center;color:#1E3A5F">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5V8z"></path><path d="M3 8l9 5 9-5M12 13v8"></path></svg>
+        </div>
+        <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:600">Ainda não há artigos no catálogo</h2>
+        <p style="margin:0;max-width:340px;font-size:15px;line-height:1.5;color:#5A6472;text-wrap:pretty">Quando o admin publicar artigos no backoffice, aparecem aqui.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ vazioFiltro }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:48px 16px">
+        <div style="width:64px;height:64px;border-radius:50%;background:#F3EFE6;display:flex;align-items:center;justify-content:center;color:#1E3A5F">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+        </div>
+        <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:600">Nenhum artigo encontrado</h2>
+        <p style="margin:0;max-width:340px;font-size:15px;line-height:1.5;color:#5A6472;text-wrap:pretty">Nada corresponde a «lanyard» com estes filtros. Experimente outra palavra ou retire filtros.</p>
+        <button style="margin-top:6px;display:flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border:1.5px solid #1E3A5F;border-radius:8px;background:#FFFFFF;color:#1E3A5F;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:pointer">Limpar filtros</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ erro }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:48px 16px">
+        <div style="width:64px;height:64px;border-radius:50%;background:#FBEDEA;display:flex;align-items:center;justify-content:center;color:#9E2B25">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l18 18"></path><path d="M8.5 16.5a5 5 0 0 1 7 0"></path><path d="M5 12.5a10 10 0 0 1 4-2.3"></path><path d="M15.5 10.4A10 10 0 0 1 19 12.5"></path><path d="M12 20h.01"></path></svg>
+        </div>
+        <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:600">Não foi possível carregar os artigos</h2>
+        <p style="margin:0;max-width:360px;font-size:15px;line-height:1.5;color:#5A6472;text-wrap:pretty">Está sem rede e o catálogo ainda não foi descarregado neste dispositivo.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;margin-top:6px">
+          <button style="display:flex;align-items:center;justify-content:center;height:48px;padding:0 20px;border:none;border-radius:8px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:16px;font-weight:700;cursor:pointer">Tentar outra vez</button>
+          <a href="#" style="display:flex;align-items:center;justify-content:center;height:48px;font-size:15px;font-weight:700;color:#1E3A5F">Como usar sem rede</a>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:760},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vazio&quot;,&quot;vazio-filtro&quot;,&quot;carregar&quot;,&quot;erro&quot;,&quot;cheio&quot;,&quot;cheio-offline&quot;],&quot;default&quot;:&quot;cheio&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const ARTIGOS = [
+  ['Caneca cerâmica clássica 330 ml','MRV-1001','2,10 €','caneca'],
+  ['Esferográfica metálica Lumen','MRV-1002','0,48 €','esferográfica'],
+  ['Saco tote em algodão 140 g/m²','MRV-1003','1,35 €','saco tote'],
+  ['T-shirt unissexo em algodão orgânico com gola redonda','MRV-1004','3,90 €','t-shirt'],
+  ['Garrafa térmica em inox 500 ml','MRV-1005','5,10 €','garrafa'],
+  ['Caderno A5 com capa em cortiça','MRV-1006','2,75 €','caderno'],
+  ['Bateria portátil 10 000 mAh','MRV-1007','9,80 €','bateria'],
+  ['Chapéu-de-chuva dobrável automático com estrutura anti-vento','MRV-1008','7,40 €','chapéu-de-chuva'],
+  ['Porta-chaves em pele reciclada','MRV-1009','0,95 €','porta-chaves'],
+  ['Fita de pescoço 20 mm','MRV-1010','0,62 €','fita de pescoço'],
+  ['Mochila para portátil 15,6"','MRV-1011','14,50 €','mochila'],
+  ['Copo reutilizável 400 ml','MRV-1012','0,88 €','copo'],
+  ['Pen USB 32 GB em bambu','MRV-1013','4,30 €','pen USB'],
+  ['Boné de 5 painéis','MRV-1014','2,20 €','boné'],
+  ['Bloco de notas adesivas 50 folhas','MRV-1015','0,55 €','notas adesivas'],
+  ['Lápis de grafite com borracha','MRV-1016','0,18 €','lápis'],
+  ['Avental de cozinha em sarja','MRV-1017','4,60 €','avental'],
+  ['Toalha de praia em microfibra 70 × 140 cm','MRV-1018','5,10 €','toalha'],
+  ['Marcador fluorescente','MRV-1019','0,32 €','marcador'],
+  ['Coluna Bluetooth compacta','MRV-1020','11,90 €','coluna'],
+  ['Lancheira térmica','MRV-1021','5,80 €','lancheira'],
+  ['Tapete de rato em tecido','MRV-1022','1,15 €','tapete de rato'],
+  ['Kit de sementes aromáticas','MRV-1023','1,60 €','kit de sementes'],
+  ['Agenda semanal 2027','MRV-1024','4,95 €','agenda']
+];
+class Component extends DCLogic {
+  state = { precos: true, sel: ['MRV-1001', 'MRV-1005'] };
+  toggle(ref) {
+    this.setState(s => ({ sel: s.sel.includes(ref) ? s.sel.filter(r => r !== ref) : [...s.sel, ref] }));
+  }
+  renderVals() {
+    const e = this.props.estado ?? 'cheio';
+    const offline = e === 'cheio-offline' || e === 'erro';
+    const cheio = e.startsWith('cheio');
+    const { precos, sel } = this.state;
+    const semFiltros = e === 'vazio' || e === 'erro';
+    let filtros = [
+      { label: 'Categoria' }, { label: 'Tipo de produto' }, { label: 'Cor' }, { label: 'Preço' }
+    ];
+    if (e === 'vazio-filtro') filtros = [{ label: 'Tipo: Têxtil', a: 1 }, { label: 'Cor: Dourado', a: 1 }, { label: 'Categoria' }, { label: 'Preço' }];
+    if (!precos) filtros = filtros.filter(f => f.label !== 'Preço');
+    filtros = filtros.map(f => ({ ...f, activo: !!f.a, inactivo: !f.a, off: semFiltros }));
+    const itens = ARTIGOS.map(([nome, ref, preco, foto]) => {
+      const na = sel.includes(ref);
+      return { nome, ref, preco, foto: 'foto · ' + foto, naSel: na && !offline, podeJuntar: !na && !offline, toggle: () => this.toggle(ref) };
+    });
+    return {
+      precos, togglePrecos: () => this.setState(s => ({ precos: !s.precos })),
+      selCount: cheio ? sel.length : 0, offline,
+      faixa: e === 'erro' ? 'Sem rede e sem catálogo descarregado' : 'Sem rede — a ver a cópia de 08/10/2026, 18:40',
+      contagem: cheio ? '24 artigos' : e === 'vazio-filtro' ? '0 artigos' : '',
+      q: e === 'vazio-filtro' ? 'lanyard' : '', semFiltros,
+      filtros, itens, esqueletos: [1,2,3,4,5,6,7,8],
+      mostraGrelha: cheio, carregar: e === 'carregar', vazio: e === 'vazio', vazioFiltro: e === 'vazio-filtro', erro: e === 'erro'
+    };
+  }
+}
+</script>
+</body>
+</html>

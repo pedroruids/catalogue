@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#FAFAF7}a{color:#1E3A5F}a:hover{color:#14202E}</style></helmet>
+<div style="min-height:680px;background:#FAFAF7;font-family:'Figtree',sans-serif;color:#14202E;box-sizing:border-box">
+  <dc-import name="AppBarB" voltar="Artigos" sem-toggle="{{ true }}" offline="{{ offline }}" sync="{{ sync }}" hint-size="100%,96px"></dc-import>
+  <main style="max-width:640px;margin:0 auto;padding:20px 16px 48px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600">Catálogo no dispositivo</h1>
+      <p style="margin:0;font-size:15px;line-height:1.5;color:#5A6472;text-wrap:pretty">Para mostrar artigos onde não há rede.</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px;padding:20px;background:#FFFFFF;border:1px solid #E3DED3;border-radius:8px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <sc-if value="{{ tomOk }}" hint-placeholder-val="{{ false }}">
+          <span style="width:44px;height:44px;border-radius:50%;background:#E6F0EA;color:#2E6A47;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+        </sc-if>
+        <sc-if value="{{ tomNeutro }}" hint-placeholder-val="{{ true }}">
+          <span style="width:44px;height:44px;border-radius:50%;background:#F3EFE6;color:#1E3A5F;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg></span>
+        </sc-if>
+        <sc-if value="{{ tomErro }}" hint-placeholder-val="{{ false }}">
+          <span style="width:44px;height:44px;border-radius:50%;background:#FBEDEA;color:#9E2B25;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5h.01"></path></svg></span>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+          <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:600;text-wrap:pretty">{{ titulo }}</h2>
+          <span style="font-size:14px;color:#5A6472;text-wrap:pretty">{{ sub }}</span>
+        </div>
+      </div>
+
+      <sc-if value="{{ temProgresso }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div role="progressbar" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100" style="height:10px;border-radius:999px;background:#ECE7DC;overflow:hidden">
+            <div style="height:100%;width:{{ pctCss }};border-radius:999px;background:#1E3A5F"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:#4F5967;font-variant-numeric:tabular-nums">
+            <span>{{ progArtigos }}</span><span>{{ progMB }}</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <dl style="margin:0;border-top:1px solid #ECE7DC">
+        <sc-for list="{{ factos }}" as="f" hint-placeholder-count="3">
+          <div style="display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid #ECE7DC;font-size:15px">
+            <dt style="color:#5A6472">{{ f.k }}</dt><dd style="margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums">{{ f.v }}</dd>
+          </div>
+        </sc-for>
+      </dl>
+
+      <sc-if value="{{ botaoPrim }}" hint-placeholder-val="{{ true }}">
+        <button style="display:flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 20px;border:none;border-radius:8px;background:#1E3A5F;color:#FAFAF7;font-family:'Figtree',sans-serif;font-size:17px;font-weight:700;cursor:pointer" style-hover="background:#16304F">{{ acao }}</button>
+      </sc-if>
+      <sc-if value="{{ botaoSec }}" hint-placeholder-val="{{ false }}">
+        <button style="display:flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 20px;border:1.5px solid #1E3A5F;border-radius:8px;background:#FFFFFF;color:#1E3A5F;font-family:'Figtree',sans-serif;font-size:17px;font-weight:700;cursor:pointer">{{ acao }}</button>
+      </sc-if>
+      <sc-if value="{{ botaoOff }}" hint-placeholder-val="{{ false }}">
+        <button disabled style="display:flex;align-items:center;justify-content:center;height:52px;padding:0 20px;border:none;border-radius:8px;background:#E4E0D7;color:#4F5967;font-family:'Figtree',sans-serif;font-size:17px;font-weight:700;cursor:not-allowed">Actualizar precisa de rede</button>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:#F3EFE6;border-radius:8px;font-size:15px;line-height:1.5;color:#14202E">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E3A5F" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5h.01"></path></svg>
+      <span style="text-wrap:pretty">Sem rede, pode consultar a lista e os artigos. Partilhar e juntar à selecção precisam de rede.</span>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:360,&quot;height&quot;:720},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vazio&quot;,&quot;carregar&quot;,&quot;erro&quot;,&quot;erro-espaco&quot;,&quot;cheio&quot;,&quot;cheio-offline&quot;],&quot;default&quot;:&quot;cheio&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const E = {
+  'vazio': { t: 'Ainda não descarregou o catálogo', s: 'Use rede Wi-Fi, se puder: as imagens ocupam espaço.', tom: 'n', f: [['Artigos','124'],['Tamanho aproximado','186 MB'],['Espaço livre','2,3 GB']], a: 'Descarregar catálogo', b: 'p' },
+  'carregar': { t: 'A descarregar…', s: 'Pode continuar a usar a app. Não feche o browser.', tom: 'n', pct: 62, pa: 'Imagens · 77 de 124 artigos', pm: '116 de 186 MB', f: [['Espaço livre','2,2 GB']], a: 'Cancelar', b: 's' },
+  'erro': { t: 'A descarga foi interrompida', s: 'A rede caiu a meio. O que já veio fica guardado.', tom: 'e', pct: 41, pa: '51 de 124 artigos', pm: '76 de 186 MB', f: [['Última cópia completa','08/10/2026, 18:40']], a: 'Retomar descarga', b: 'p' },
+  'erro-espaco': { t: 'Sem espaço no dispositivo', s: 'Faltam cerca de 120 MB. Liberte espaço e tente outra vez.', tom: 'e', f: [['Precisa de','186 MB'],['Espaço livre','64 MB']], a: 'Tentar outra vez', b: 'p' },
+  'cheio': { t: 'Catálogo descarregado', s: 'Actualiza-se sozinho quando há rede.', tom: 'ok', f: [['Última sincronização','hoje, 09:12'],['Artigos','124'],['Tamanho no dispositivo','186 MB']], a: 'Actualizar agora', b: 's' },
+  'cheio-offline': { t: 'A usar a cópia do dispositivo', s: 'Quando voltar a rede, a cópia actualiza-se.', tom: 'ok', f: [['Última sincronização','08/10/2026, 18:40'],['Artigos','124'],['Tamanho no dispositivo','186 MB']], b: 'off' }
+};
+class Component extends DCLogic {
+  renderVals() {
+    const e = this.props.estado ?? 'cheio';
+    const d = E[e] || E.cheio;
+    return {
+      offline: e === 'cheio-offline', sync: e === 'cheio' ? 'Ligado · catálogo sincronizado hoje, 09:12' : 'Ligado',
+      titulo: d.t, sub: d.s, tomOk: d.tom === 'ok', tomNeutro: d.tom === 'n', tomErro: d.tom === 'e',
+      temProgresso: d.pct != null, pct: d.pct, pctCss: (d.pct || 0) + '%', progArtigos: d.pa, progMB: d.pm,
+      factos: d.f.map(([k, v]) => ({ k, v })), acao: d.a,
+      botaoPrim: d.b === 'p', botaoSec: d.b === 's', botaoOff: d.b === 'off'
+    };
+  }
+}
+</script>
+</body>
+</html>

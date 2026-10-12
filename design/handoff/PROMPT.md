@@ -1,5 +1,7 @@
 # Prompt para o Claude Design
 
+> Histórico (2026-10-10): as fontes Fraunces + Manrope pedidas abaixo foram substituídas por Bricolage Grotesque + Figtree (D9).
+
 Faz upload dos 4 ficheiros desta pasta (`PRD.md`, `BRAND.md`, `DESIGN.md`, `ECRAS.md`) e cola o
 texto abaixo.
 

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{margin:0;background:#E9E5DC}a{color:#1E3A5F}a:hover{color:#14202E}</style></helmet>
+<div style="font-family:'Figtree',sans-serif;color:#14202E;padding:64px;display:flex;flex-direction:column;gap:96px;width:max-content">
+  <header style="display:flex;flex-direction:column;gap:8px;max-width:820px">
+    <h1 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:48px;font-weight:600;color:#1E3A5F">Maravilha · ecrãs v1 · proposta B</h1>
+    <p style="margin:0;font-size:18px;line-height:1.5;color:#4F5967">Mesmos ecrãs, outra tipografia: Bricolage Grotesque nos títulos e Figtree no corpo. Ecrãs 1 a 7 do ECRAS.md. Cada linha é uma largura (360 · 768 · 1280 px) e cada coluna um estado. Os interruptores, as variantes e os botões funcionam em cada quadro.</p>
+  </header>
+
+  <sc-for list="{{ ecras }}" as="ec" hint-placeholder-count="7">
+    <section data-screen-label="{{ ec.label }}" style="display:flex;flex-direction:column;gap:28px">
+      <div style="display:flex;flex-direction:column;gap:6px;max-width:820px">
+        <h2 style="margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:36px;font-weight:600">{{ ec.titulo }}</h2>
+        <p style="margin:0;font-size:17px;line-height:1.5;color:#4F5967;text-wrap:pretty">{{ ec.nota }}</p>
+      </div>
+      <sc-for list="{{ ec.linhas }}" as="ln" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#4F5967">{{ ln.label }}</span>
+          <div style="display:flex;gap:40px;align-items:flex-start">
+            <sc-for list="{{ ln.frames }}" as="fr" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:10px;flex-shrink:0">
+                <span style="font-size:15px;font-weight:700;color:#14202E">{{ fr.label }}</span>
+                <div style="width:{{ fr.w }};border-radius:12px;overflow:hidden;background:#FAFAF7;box-shadow:0 1px 2px rgba(20,32,46,0.08),0 8px 24px rgba(20,32,46,0.08)">
+                  <sc-if value="{{ fr.isLogin }}" hint-placeholder-val="{{ false }}"><dc-import name="LoginB" estado="{{ fr.id }}" hint-size="100%,680px"></dc-import></sc-if>
+                  <sc-if value="{{ fr.isRec }}" hint-placeholder-val="{{ false }}"><dc-import name="RecuperacaoB" estado="{{ fr.id }}" hint-size="100%,680px"></dc-import></sc-if>
+                  <sc-if value="{{ fr.isLista }}" hint-placeholder-val="{{ false }}"><dc-import name="ListaB" estado="{{ fr.id }}" hint-size="100%,680px"></dc-import></sc-if>
+                  <sc-if value="{{ fr.isArtigo }}" hint-placeholder-val="{{ false }}"><dc-import name="ArtigoB" estado="{{ fr.id }}" hint-size="100%,680px"></dc-import></sc-if>
+                  <sc-if value="{{ fr.isPartilha }}" hint-placeholder-val="{{ false }}"><dc-import name="CriarPartilhaB" estado="{{ fr.id }}" hint-size="100%,680px"></dc-import></sc-if>
+                  <sc-if value="{{ fr.isOffline }}" hint-placeholder-val="{{ false }}"><dc-import name="OfflineB" estado="{{ fr.id }}" hint-size="100%,680px"></dc-import></sc-if>
+                  <sc-if value="{{ fr.isPublica }}" hint-placeholder-val="{{ false }}"><dc-import name="PartilhaPublicaB" estado="{{ fr.id }}" hint-size="100%,680px"></dc-import></sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </section>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const ECRAS = [
+  ['Login', '01 Login', '1 · Login', 'O estado «cheio» não se aplica: com sucesso, vai para a lista de artigos.',
+    [['vazio','Vazio'],['carregar','A carregar'],['erro','Erro']]],
+  ['Rec', '02 Recuperação', '2 · Recuperação de password', 'Dois passos: pedir a ligação e definir a password nova. A confirmação não diz se a conta existe.',
+    [['vazio','Vazio · passo 1'],['vazio2','Vazio · passo 2'],['carregar','A carregar'],['erro-email','Erro · email inválido'],['erro-expirada','Erro · ligação expirada'],['erro-coincidem','Erro · não coincidem'],['cheio','Cheio · ligação enviada']]],
+  ['Lista', '03 Lista', '3 · Lista de artigos', 'O filtro de preço desaparece quando os preços estão escondidos. «Juntar» monta a selecção para partilhar; sem rede fica desactivado.',
+    [['vazio','Vazio · catálogo sem artigos'],['vazio-filtro','Vazio · sem resultados'],['carregar','A carregar'],['erro','Erro · sem rede nem cópia'],['cheio','Cheio'],['cheio-offline','Cheio · sem rede']]],
+  ['Artigo', '04 Artigo', '4 · Página do artigo', 'Escalões por variante: mude a cor ou o tamanho e a tabela muda. Com os preços escondidos, não aparece nenhum preço.',
+    [['vazio','Vazio · sem imagens, sem escalões'],['carregar','A carregar'],['erro','Erro · não encontrado'],['cheio','Cheio · com preços'],['cheio-sem-precos','Cheio · preços escondidos'],['cheio-offline','Cheio · sem rede']]],
+  ['Partilha', '05 Criar partilha', '5 · Criar partilha', 'Validade por omissão: 7 dias. «Sem preços» vem escolhido por omissão, por ser o modo mais seguro.',
+    [['vazio','Vazio'],['config','A preencher'],['carregar','A carregar'],['erro-rede','Erro · sem rede'],['erro-falhou','Erro · falhou'],['cheio','Cheio · ligação gerada']]],
+  ['Offline', '06 Offline', '6 · Catálogo no dispositivo', 'Só leitura (D4). A data da última sincronização está sempre à vista.',
+    [['vazio','Vazio · nunca descarregado'],['carregar','A carregar'],['erro','Erro · interrompida'],['erro-espaco','Erro · sem espaço'],['cheio','Cheio'],['cheio-offline','Cheio · sem rede']]],
+  ['Publica', '07 Partilha pública', '7 · Página da partilha (pública)', 'Sem a navegação da app. Nos modos «sem preços» e «só imagens» não há dados de preço no componente (D5). As mensagens de erro não mostram dados.',
+    [['cheio-com','Cheio · com preços'],['cheio-sem','Cheio · sem preços'],['cheio-imagens','Cheio · só imagens'],['carregar','A carregar'],['vazio','Vazio · artigos retirados'],['erro-expirada','Erro · expirada'],['erro-revogada','Erro · revogada'],['erro-inexistente','Erro · inexistente']]]
+];
+const LARG = [['360px','360 px · telemóvel'],['768px','768 px · tablet'],['1280px','1280 px · PC']];
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      ecras: ECRAS.map(([k, label, titulo, nota, estados]) => ({
+        label, titulo, nota,
+        linhas: LARG.map(([w, l]) => ({
+          label: l,
+          frames: estados.map(([id, fl]) => ({ id, label: fl, w, ['is' + k]: true }))
+        }))
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
