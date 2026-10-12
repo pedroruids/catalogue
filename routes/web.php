@@ -11,6 +11,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::livewire('artigos', 'pages::articles.index')->name('articles.index');
     Route::livewire('artigos/{article}', 'pages::articles.show')->name('articles.show');
+    Route::livewire('partilhar', 'pages::shares.create')->name('shares.create');
 });
 
 require __DIR__.'/settings.php';
