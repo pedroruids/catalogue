@@ -113,13 +113,13 @@ class Article extends Model
 
         $values = [];
         foreach ($axes as $axis) {
-            $values[(string) ($axis['name'] ?? '')] = $axis['values'] ?? [];
+            $values[(string) ($axis['name'] ?? '')] = array_map('strval', $axis['values'] ?? []);
         }
 
         $uses = [];
         foreach ($variants as $variant) {
             foreach ($variant->options as $axis => $value) {
-                $key = isset($values[$axis]) ? ($value !== '' && in_array($value, $values[$axis], true) ? null : "O valor «{$value}» do eixo «{$axis}»") : "O eixo «{$axis}»";
+                $key = isset($values[$axis]) ? ((string) $value !== '' && in_array((string) $value, $values[$axis], true) ? null : "O valor «{$value}» do eixo «{$axis}»") : "O eixo «{$axis}»";
                 if ($key !== null) {
                     $uses[$key] = ($uses[$key] ?? 0) + 1;
                 }

@@ -46,6 +46,8 @@ class VariantsRelationManager extends RelationManager
             $select = Select::make($axis['name'])
                 ->label($axis['name'])
                 ->options(array_combine($axis['values'], $axis['values']))
+                // As chaves de array numéricas ("38") viram int: guarda-se sempre string.
+                ->dehydrateStateUsing(fn (mixed $state): string => (string) $state)
                 ->required()
                 ->native(false);
 
@@ -54,7 +56,7 @@ class VariantsRelationManager extends RelationManager
                 $select->rules([fn (?ArticleVariant $record, Get $get): Closure => function (string $attribute, mixed $value, Closure $fail) use ($article, $record, $get, $axes): void {
                     $chosen = [];
                     foreach ($axes as $axis) {
-                        $chosen[$axis['name']] = $get($axis['name']);
+                        $chosen[$axis['name']] = (string) $get($axis['name']);
                     }
                     $this->failIfDuplicate($article, $record, $chosen, $fail);
                 }]);
@@ -119,7 +121,7 @@ class VariantsRelationManager extends RelationManager
         ksort($chosen);
 
         $duplicate = $article->variants()->get()->contains(function (ArticleVariant $variant) use ($record, $chosen): bool {
-            $options = $variant->options;
+            $options = array_map('strval', $variant->options);
             ksort($options);
 
             return $variant->id !== $record?->id && $options === $chosen;

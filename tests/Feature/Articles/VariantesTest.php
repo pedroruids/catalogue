@@ -191,3 +191,68 @@ it('apagar o artigo apaga as variantes e apagar a imagem só limpa a ligação',
     $this->article->delete();
     expect(ArticleVariant::count())->toBe(0);
 });
+
+it('aceita eixos com valores numéricos do princípio ao fim', function () {
+    $artigo = Article::factory()->create(['variant_axes' => [['name' => 'Nº', 'values' => ['38', '40']]]]);
+
+    criar($artigo, ['options' => ['Nº' => 38], 'reference' => 'N38'])->assertHasNoFormErrors();
+    // O Select devolve a chave do array: int quando o valor é numérico (38); testa-se int e string.
+    variantes($artigo)->callTableAction('create', data: ['options' => ['Nº' => '40'], 'reference' => 'N40'])->assertHasNoFormErrors();
+
+    expect($artigo->variants()->pluck('options')->all())->toBe([['Nº' => '38'], ['Nº' => '40']]);
+
+    editar($artigo)
+        ->fillForm(['variant_axes' => [['name' => 'Nº', 'values' => ['38', '40', '42']]]])
+        ->call('save')
+        ->assertHasNoFormErrors();
+});
+
+it('reconhece uma variante guardada com valor inteiro legado', function () {
+    $artigo = Article::factory()->create(['variant_axes' => [['name' => 'Nº', 'values' => ['38', '40']]]]);
+    ArticleVariant::factory()->for($artigo)->create(['options' => ['Nº' => 38], 'reference' => 'L']);
+
+    editar($artigo)
+        ->fillForm(['variant_axes' => [['name' => 'Nº', 'values' => ['38', '40', '42']]]])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    editar($artigo)
+        ->fillForm(['variant_axes' => [['name' => 'Nº', 'values' => ['40']]]])
+        ->call('save')
+        ->assertHasFormErrors(['variant_axes']);
+
+    variantes($artigo)->callTableAction('create', data: ['options' => ['Nº' => '38'], 'reference' => 'L2'])->assertHasFormErrors();
+});
+
+it('recusa a combinação repetida quando os eixos estão por outra ordem que as chaves guardadas', function () {
+    // O MySQL reordena as chaves do JSON; com os eixos invertidos, só o ksort torna as duas ordens comparáveis.
+    $artigo = Article::factory()->create(['variant_axes' => array_reverse(EIXOS)]);
+    ArticleVariant::factory()->for($artigo)->create(['options' => ['Tamanho' => 'M', 'Cor' => 'Azul'], 'reference' => 'A']);
+
+    criar($artigo, valida(['reference' => 'B']))->assertHasFormErrors();
+
+    expect($artigo->variants()->count())->toBe(1);
+});
+
+it('não deixa acrescentar um eixo enquanto houver variantes', function () {
+    ArticleVariant::factory()->for($this->article)->create(['options' => ['Cor' => 'Azul', 'Tamanho' => 'M'], 'reference' => 'A']);
+
+    editar($this->article)
+        ->fillForm(['variant_axes' => [...EIXOS, ['name' => 'Material', 'values' => ['Algodão']]]])
+        ->call('save')
+        ->assertHasFormErrors(['variant_axes']);
+
+    expect($this->article->fresh()->variant_axes)->toBe(EIXOS);
+});
+
+it('recusa nomes de eixo com pontos ou repetidos em maiúsculas/minúsculas, em PT-PT', function () {
+    editar($this->article)
+        ->fillForm(['variant_axes' => [['name' => 'Peso.kg', 'values' => ['1']]]])
+        ->call('save')
+        ->assertHasFormErrors(['variant_axes.0.name' => 'O nome do eixo não pode conter pontos.']);
+
+    editar($this->article)
+        ->fillForm(['variant_axes' => [['name' => 'Cor', 'values' => ['A']], ['name' => ' cor ', 'values' => ['B']]]])
+        ->call('save')
+        ->assertHasFormErrors(['variant_axes' => 'Os nomes dos eixos não se podem repetir (maiúsculas e espaços nas pontas não contam).']);
+});

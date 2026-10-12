@@ -71,6 +71,12 @@ class ArticleForm
                             ->collapsible()
                             ->addActionLabel('Adicionar eixo')
                             ->defaultItems(0)
+                            ->rules([fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
+                                $names = collect(is_array($value) ? $value : [])->map(fn (mixed $axis): string => mb_strtolower(trim((string) (is_array($axis) ? ($axis['name'] ?? '') : ''))))->filter();
+                                if ($names->count() !== $names->unique()->count()) {
+                                    $fail('Os nomes dos eixos não se podem repetir (maiúsculas e espaços nas pontas não contam).');
+                                }
+                            }])
                             ->rules([fn (?Article $record): Closure => function (string $attribute, mixed $value, Closure $fail) use ($record): void {
                                 $problem = $record?->variantAxesProblem(is_array($value) ? $value : []);
                                 if ($problem !== null) {
@@ -85,6 +91,7 @@ class ArticleForm
                                     ->maxLength(100)
                                     // O nome serve de caminho no formulário das variantes: sem pontos.
                                     ->notRegex('/\./')
+                                    ->validationMessages(['not_regex' => 'O nome do eixo não pode conter pontos.'])
                                     ->distinct(),
                                 TagsInput::make('values')
                                     ->label('Valores')
