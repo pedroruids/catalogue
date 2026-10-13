@@ -4,9 +4,9 @@
 > Contexto pessoal de cada colaborador vive no Brain do próprio JOCA.
 
 ## Estado actual
-E4 a meio: Ondas 1-4 na `main` (Xavier #1-#9, #11, #12 fechados). Falta a Onda 5 (offline, Xavier #10,
-a partir em 10a/10b antes de arrancar) e os portões humanos das Ondas 1-4 no telemóvel. E1 só tem por
-fazer o Laravel Boost (interactivo, corre o Pedro). Deploy por decidir (D7).
+E4 a meio: Ondas 1-4 e 5a na `main` (Xavier #1-#12 fechados). Em curso a Onda 5b (lista e artigo sem rede,
+Xavier #13). Por fazer: portões humanos das Ondas 1-5 no telemóvel — há dados de demo (`DemoSeeder`,
+`vendedor@maravilha.test` / `password`). Deploy por decidir (D7); a app instalável exige HTTPS fora de localhost.
 
 ## Fases
 | Fase | Estado | Prova |
@@ -16,10 +16,10 @@ fazer o Laravel Boost (interactivo, corre o Pedro). Deploy por decidir (D7).
 | S3 Stack + ambiente local       | ✅ 2026-10-09 | PRD §8 (tabela Ambiente local) + docs/DECISIONS.md D1-D2 |
 | S4 Infraestrutura               | ✅ 2026-10-09 | repo pedroruids/catalogue (público, D6) · deploy: decidir depois (D7) |
 | S5 Direcção de design           | ✅ 2026-10-09 | docs/DESIGN.md |
-| E1 Fundação (scaffold+CI+hooks) | ⏳ falta Boost | CI verde no PR #1 (34 testes, MySQL 8.4) · ruleset «main protegida» · Xavier CAT-2026 #1-#11 |
+| E1 Fundação (scaffold+CI+hooks) | ✅ 2026-10-13 · Boost no PR #12 | CI verde no PR #1 (34 testes, MySQL 8.4) · ruleset «main protegida» · Xavier CAT-2026 #1-#11 |
 | E2 Design (via: Claude Design)  | ✅ 2026-10-12 | docs/design_handoff_maravilha_app/ · protótipo PR #5 · tema PR #6 · D9-D11 |
 | E3 Ponto de situação            | ✅ 2026-10-12 | docs/ONDAS.md |
-| E4 Desenvolvimento (ondas)      | ⏳ Ondas 1-4 na main; falta Onda 5 | PRs #7-#10 |
+| E4 Desenvolvimento (ondas)      | ⏳ Ondas 1-4 e 5a na main; falta 5b | PRs #7-#10, #14 |
 | Produção                        | ⬜ | deploy por decidir (D7) |
 
 ## Ondas (preenchido na E4)
@@ -29,9 +29,11 @@ fazer o Laravel Boost (interactivo, corre o Pedro). Deploy por decidir (D7).
 | 2 Catálogo no backoffice | #4 #5 #6 | ✅ 2026-10-12 · PR #8 | ⬜ por rever (1 artigo real com imagens, variantes, escalões) |
 | 3 App do vendedor | #7 #8 | ✅ 2026-10-12 · PR #9 | ⬜ por rever (telemóvel, interruptor de preços, 360 px) |
 | 4 Partilha por link | #9 | ✅ 2026-10-13 · PR #10 | ⬜ por rever (3 modos, link expirado e revogado) |
-| 5 Offline | #10 (→ 10a/10b) | ⬜ | — |
+| 5a Offline: instalável e cópia local | #10 | ✅ 2026-10-13 · PR #14 | ⬜ por rever (instalar, descarregar, sair da conta) |
+| 5b Offline: lista e artigo sem rede | #13 | ⏳ em curso | — |
 
 ## Diário (mais recente primeiro)
+- 2026-10-13 · Pedro · Laravel Boost 2.10 (PR #12, E1 fechada) · DemoSeeder (PR #13) corrido na BD local · Onda 5 partida em #10 (5a) e #13 (5b) · Onda 5a na main (PR #14): app instalável, «descarregar catálogo» para IndexedDB + Cache, actualização automática, cópia apagada no logout/troca de utilizador; 2 revisões independentes · D17 (cópia offline leva preços)
 - 2026-10-13 · Pedro · Onda 4 (partilha por link, Xavier #9) na main via PR #10 (333 testes, revisão independente + gate de runtime 360 px); Xavier #9 fechado; 2 tabelas novas (`shares`, `share_article`) — `php artisan migrate` na BD local
 - 2026-10-12 · Pedro · Ondas 1-3 na main: papéis, tipos de produto com campos dinâmicos e artigos (PR #7) · imagens, variantes e escalões (PR #8) · lista e página do artigo no vendedor (PR #9); tema D9 na app e no Filament (PR #6); protótipo estático (PR #5)
 - 2026-10-10 · Pedro · protótipo estático no stack (Blade + Flux + Alpine, sem BD): ecrãs 1-7 com todos os estados, tokens D9 no @theme, APP_NAME Maravilha; gate de runtime independente verde (55 rotas×estados a 360 px, D5 sem «€»); 134 testes
