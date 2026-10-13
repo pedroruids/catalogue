@@ -1,12 +1,15 @@
 /**
  * Cópia local do catálogo (Onda 5a, Xavier #10): snapshot JSON em IndexedDB + imagens reduzidas na
  * Cache Storage. Aqui só se ESCREVE a cópia; lê-la sem rede é a Onda 5b (#13), que reutiliza
- * `lerEstado()` e as stores abaixo. IndexedDB «à mão»: duas stores, sem dependência.
+ * `lerEstado()` e as stores abaixo (`lerCopia()`, na Onda 5b). IndexedDB «à mão»: duas stores, sem dependência.
  */
 const BD = 'maravilha-catalogo';
 const BD_VERSAO = 1;
 export const CACHE_IMAGENS = 'catalogo-imagens-v1';
 const CHAVE = 'estado';
+/** Estado do interruptor de preços offline (por sessão do separador/app; ver `vista.js`). */
+export const CHAVE_PRECOS = 'catalogo-precos-offline';
+export const CHAVE_LISTA = 'catalogo-lista-offline'; // pesquisa/tipo da lista, para o «voltar» do artigo
 const PARALELO = 6;
 const INTERVALO_REVERIFICAR_MS = 10 * 60 * 1000;
 
@@ -54,6 +57,12 @@ export async function apagarCopia() {
             // sem Cache Storage: nada a apagar
         }
     })();
+    try {
+        sessionStorage.removeItem(CHAVE_PRECOS);
+        sessionStorage.removeItem(CHAVE_LISTA);
+    } catch {
+        // sem sessionStorage: nada a apagar
+    }
     await Promise.all([bd, imagens]);
 }
 
@@ -82,6 +91,27 @@ export async function lerEstado() {
         return null;
     }
     return estado;
+}
+
+function lerStore(bd, nome) {
+    return new Promise((resolve, reject) => {
+        const pedido = bd.transaction(nome).objectStore(nome).getAll();
+        pedido.onsuccess = () => resolve(pedido.result);
+        pedido.onerror = () => reject(pedido.error);
+    });
+}
+
+/** A cópia inteira para a vista offline: {estado, artigos, tipos}, ou null se não há cópia. */
+export async function lerCopia() {
+    const estado = await lerEstado();
+    if (!estado) return null;
+    const bd = await abrirBD();
+    try {
+        const [artigos, tipos] = await Promise.all([lerStore(bd, 'artigos'), lerStore(bd, 'tipos')]);
+        return { estado, artigos, tipos };
+    } finally {
+        bd.close();
+    }
 }
 
 /** Substitui a cópia numa só transacção: ou fica tudo novo ou fica tudo como estava. */

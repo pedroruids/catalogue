@@ -11,6 +11,12 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::view('/', 'welcome')->name('home');
 
+// Shell offline (Onda 5b, Xavier #13): página estática que o service worker guarda e serve no lugar das
+// rotas do vendedor quando a rede falha. Sem sessão nem cookies, igual para todos: nunca leva dados de ninguém.
+Route::view('offline', 'offline.shell')
+    ->withoutMiddleware([EncryptCookies::class, AddQueuedCookiesToResponse::class, StartSession::class, ShareErrorsFromSession::class, PreventRequestForgery::class])
+    ->name('offline.shell');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // O dashboard do starter kit deu lugar à lista de artigos (Xavier #7); o nome mantém-se.
     Route::redirect('dashboard', 'artigos')->name('dashboard');

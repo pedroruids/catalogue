@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/passkeys.js',
                 'resources/js/offline/sair.js',
+                'resources/js/offline/shell.js',
                 'resources/js/prototipo.js',
                 'resources/css/filament/admin/theme.css',
             ],

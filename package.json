@@ -5,7 +5,8 @@
     "scripts": {
         "build": "vp build",
         "dev": "vp dev",
-        "gate": "node scripts/gate-runtime.mjs --base http://localhost:8000"
+        "gate": "node scripts/gate-runtime.mjs --base http://localhost:8000",
+        "test:js": "node --test resources/js/offline/render.test.mjs resources/js/offline/sw.test.mjs"
     },
     "dependencies": {
         "@fontsource-variable/bricolage-grotesque": "^5.3.0",
