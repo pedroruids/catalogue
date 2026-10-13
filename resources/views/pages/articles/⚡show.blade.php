@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\ArticleVariant;
 use App\Models\PriceTier;
 use App\Support\PriceVisibility;
+use App\Support\Selection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 use Livewire\Attributes\Computed;
@@ -24,6 +25,21 @@ new #[Layout('components.app.layout')] #[Title('Artigo')] class extends Componen
     public function togglePrices(): void
     {
         PriceVisibility::toggle();
+    }
+
+    public function toggleSelection(): void
+    {
+        Selection::toggle($this->article->id);
+    }
+
+    /** «Partilhar»: junta o artigo (se ainda não estiver) e abre o ecrã de partilha. */
+    public function share(): void
+    {
+        if (! Selection::has($this->article->id)) {
+            Selection::toggle($this->article->id);
+        }
+
+        $this->redirectRoute('shares.create');
     }
 
     public function mount(Article $article): void
@@ -177,6 +193,25 @@ new #[Layout('components.app.layout')] #[Title('Artigo')] class extends Componen
                     <span class="text-[13px] font-bold tracking-[0.04em] text-muted uppercase">{{ $article->productType->name }}</span>
                     <h1 class="font-display text-[30px] leading-[1.15] font-semibold text-pretty [overflow-wrap:anywhere]">{{ $article->name }}</h1>
                     <span class="text-sm text-muted tabular-nums">Ref. {{ $article->reference }}</span>
+                </div>
+
+                {{-- Acções --}}
+                @php($naSeleccao = \App\Support\Selection::has($article->id))
+                <div class="flex flex-wrap gap-2.5">
+                    <button type="button" wire:click="share"
+                            class="flex h-12 flex-[1_1_140px] items-center justify-center gap-2 rounded-lg bg-brand px-[18px] text-base font-bold text-bg hover:bg-brand-hover">
+                        <x-app.icone nome="partilhar" class="size-[18px]" />
+                        Partilhar
+                    </button>
+                    <button type="button" wire:click="toggleSelection" aria-pressed="{{ $naSeleccao ? 'true' : 'false' }}"
+                            @class([
+                                'flex h-12 flex-[1_1_160px] items-center justify-center gap-2 rounded-lg border-[1.5px] border-brand px-[18px] text-base font-bold text-brand',
+                                'bg-surface-warm' => $naSeleccao,
+                                'bg-surface' => ! $naSeleccao,
+                            ])>
+                        <x-app.icone :nome="$naSeleccao ? 'visto' : 'mais'" class="size-[18px]" />
+                        {{ $naSeleccao ? 'Na selecção' : 'Juntar à selecção' }}
+                    </button>
                 </div>
 
                 {{-- Variantes: um grupo de opções por eixo --}}

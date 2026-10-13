@@ -4,6 +4,7 @@ use App\Enums\ArticleStatus;
 use App\Models\Article;
 use App\Models\ProductType;
 use App\Support\PriceVisibility;
+use App\Support\Selection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
@@ -28,6 +29,11 @@ new #[Layout('components.app.layout')] #[Title('Artigos')] class extends Compone
     public function togglePrices(): void
     {
         PriceVisibility::toggle();
+    }
+
+    public function toggleSelection(int $id): void
+    {
+        Selection::toggle($id);
     }
 
     public function updatedSearch(): void
@@ -162,9 +168,10 @@ new #[Layout('components.app.layout')] #[Title('Artigos')] class extends Compone
 
         @if ($total > 0)
             @php($articles = $this->articles)
+            @php($selected = \App\Support\Selection::ids())
             <div class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3">
                 @foreach ($articles as $article)
-                    <x-app.cartao-artigo wire:key="artigo-{{ $article->id }}" :article="$article" :show-prices="$showPrices" />
+                    <x-app.cartao-artigo wire:key="artigo-{{ $article->id }}" :article="$article" :show-prices="$showPrices" :selected="in_array($article->id, $selected, true)" />
                 @endforeach
             </div>
 

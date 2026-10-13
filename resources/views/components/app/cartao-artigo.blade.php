@@ -1,10 +1,11 @@
 {{--
     Cartão da lista de artigos: imagem reduzida 1:1, nome (2 linhas), referência e preço «desde».
-    Props: article (com primaryImage e variants.priceTiers carregados) · showPrices
+    Props: article (com primaryImage e variants.priceTiers carregados) · showPrices · selected
+    O botão chama `toggleSelection(id)` na página Livewire que contém o cartão.
     Com preços escondidos (D5) nem «desde» nem «Preço sob consulta» chegam ao HTML.
     O cartão é um <article> com a ligação esticada no nome.
 --}}
-@props(['article', 'showPrices' => true])
+@props(['article', 'showPrices' => true, 'selected' => false])
 
 @php
     $image = $article->primaryImage;
@@ -29,5 +30,18 @@
                 <span class="text-sm text-muted">Preço sob consulta</span>
             @endif
         @endif
+        <div class="min-h-1.5 flex-1"></div>
+        <button type="button" wire:click="toggleSelection({{ $article->id }})" aria-pressed="{{ $selected ? 'true' : 'false' }}"
+                @class([
+                    'relative z-10 flex h-11 items-center justify-center gap-1.5 rounded-lg border-[1.5px] border-brand text-sm font-bold',
+                    'bg-brand text-bg' => $selected,
+                    'bg-surface text-brand hover:bg-surface-warm' => ! $selected,
+                ])>
+            @if ($selected)
+                <x-app.icone nome="visto" class="size-4" /> Na selecção
+            @else
+                <x-app.icone nome="mais" class="size-4" /> Juntar
+            @endif
+        </button>
     </div>
 </article>

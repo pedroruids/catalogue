@@ -4,9 +4,10 @@
       voltar      string|null  rótulo do botão voltar (ex.: "Artigos"); null → logótipo
       voltarHref  string|null  destino do voltar (omissão: lista de artigos)
       showPrices  bool|null    estado do interruptor de preços; null → sem interruptor
+      semSeleccao bool         esconde o indicador da selecção (ecrã de partilha)
     O interruptor chama `togglePrices` na página Livewire que contém a barra (trait `TogglesPrices`).
 --}}
-@props(['voltar' => null, 'voltarHref' => null, 'showPrices' => null])
+@props(['voltar' => null, 'voltarHref' => null, 'showPrices' => null, 'semSeleccao' => false])
 
 <header class="border-b border-border bg-surface">
     <div class="mx-auto flex max-w-[1240px] items-center gap-2 px-4 py-2.5">
@@ -21,6 +22,15 @@
         @endif
 
         <div class="flex-1"></div>
+
+        @unless ($semSeleccao)
+            @php($seleccionados = \App\Support\Selection::count())
+            <a href="{{ route('shares.create') }}" aria-label="Selecção: {{ $seleccionados }} {{ $seleccionados === 1 ? 'artigo' : 'artigos' }}"
+               class="flex h-11 items-center gap-1.5 rounded-full border border-border bg-surface px-3 text-[15px] font-bold text-brand tabular-nums">
+                <x-app.icone nome="saco" class="size-[18px]" />
+                <span>{{ $seleccionados }}</span>
+            </a>
+        @endunless
 
         @if ($showPrices !== null)
             <button type="button" wire:click="togglePrices"
