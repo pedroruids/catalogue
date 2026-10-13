@@ -4,8 +4,8 @@
 > Contexto pessoal de cada colaborador vive no Brain do próprio JOCA.
 
 ## Estado actual
-E4 a meio: Ondas 1-4 e 5a na `main` (Xavier #1-#12 fechados). Em curso a Onda 5b (lista e artigo sem rede,
-Xavier #13). Por fazer: portões humanos das Ondas 1-5 no telemóvel — há dados de demo (`DemoSeeder`,
+E4 a meio: Ondas 1-4 e 5a na `main` (Xavier #1-#12 fechados). Onda 5b (lista e artigo sem rede,
+Xavier #13) no PR #16, aprovado e por fundir. Por fazer: portões humanos das Ondas 1-5 no telemóvel — há dados de demo (`DemoSeeder`,
 `vendedor@maravilha.test` / `password`). Deploy por decidir (D7); a app instalável exige HTTPS fora de localhost.
 
 ## Fases
@@ -30,9 +30,10 @@ Xavier #13). Por fazer: portões humanos das Ondas 1-5 no telemóvel — há dad
 | 3 App do vendedor | #7 #8 | ✅ 2026-10-12 · PR #9 | ⬜ por rever (telemóvel, interruptor de preços, 360 px) |
 | 4 Partilha por link | #9 | ✅ 2026-10-13 · PR #10 | ⬜ por rever (3 modos, link expirado e revogado) |
 | 5a Offline: instalável e cópia local | #10 | ✅ 2026-10-13 · PR #14 | ⬜ por rever (instalar, descarregar, sair da conta) |
-| 5b Offline: lista e artigo sem rede | #13 | ⏳ em curso | — |
+| 5b Offline: lista e artigo sem rede | #13 | ⏳ PR #16 aprovado (3 revisões), por fundir | ⬜ por rever (modo avião: lista, artigo, interruptor) |
 
 ## Diário (mais recente primeiro)
+- 2026-10-13 · Pedro · Onda 5b (PR #16): lista e artigo sem rede a partir da cópia local, shell offline estático no SW, «precisa de rede» em partilhar/juntar; D18 — interruptor de preços abre sempre em «sem preços», online e offline; 3 revisões independentes (XSS, fuga de preços, fallback do SW por mutação)
 - 2026-10-13 · Pedro · Laravel Boost 2.10 (PR #12, E1 fechada) · DemoSeeder (PR #13) corrido na BD local · Onda 5 partida em #10 (5a) e #13 (5b) · Onda 5a na main (PR #14): app instalável, «descarregar catálogo» para IndexedDB + Cache, actualização automática, cópia apagada no logout/troca de utilizador; 2 revisões independentes · D17 (cópia offline leva preços)
 - 2026-10-13 · Pedro · Onda 4 (partilha por link, Xavier #9) na main via PR #10 (333 testes, revisão independente + gate de runtime 360 px); Xavier #9 fechado; 2 tabelas novas (`shares`, `share_article`) — `php artisan migrate` na BD local
 - 2026-10-12 · Pedro · Ondas 1-3 na main: papéis, tipos de produto com campos dinâmicos e artigos (PR #7) · imagens, variantes e escalões (PR #8) · lista e página do artigo no vendedor (PR #9); tema D9 na app e no Filament (PR #6); protótipo estático (PR #5)
