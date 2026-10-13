@@ -140,7 +140,7 @@ it('o cartão usa a miniatura, nunca o original, e mostra «desde» em pt-PT', f
     $article = publicado(['name' => 'Caneca Azul'], 1250);
     comImagem($article);
 
-    $html = $this->actingAs(User::factory()->create())->get(route('articles.index'))->getContent();
+    $html = $this->actingAs(User::factory()->create())->withSession(['show_prices' => true])->get(route('articles.index'))->getContent();
 
     expect($html)
         ->toContain("articles/{$article->id}-thumb.webp")
@@ -157,7 +157,7 @@ it('o «desde» é o menor preço das variantes activas', function () {
     $inactiva = ArticleVariant::factory()->create(['article_id' => $article->id, 'is_active' => false]);
     PriceTier::factory()->create(['article_variant_id' => $inactiva->id, 'unit_price_cents' => 100]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->create())->withSession(['show_prices' => true])
         ->get(route('articles.index'))
         ->assertSee(PriceTier::formatCents(900))
         ->assertDontSee(PriceTier::formatCents(100));
@@ -166,7 +166,7 @@ it('o «desde» é o menor preço das variantes activas', function () {
 it('artigo sem preço mostra «Preço sob consulta»', function () {
     publicado(['name' => 'Caneca Azul'], null);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->create())->withSession(['show_prices' => true])
         ->get(route('articles.index'))
         ->assertSee('Preço sob consulta')
         ->assertDontSee('desde');
@@ -178,35 +178,35 @@ it('artigo sem imagens mostra o espaço «Sem imagens»', function () {
     $this->actingAs(User::factory()->create())->get(route('articles.index'))->assertSee('Sem imagens');
 });
 
-it('com os preços escondidos o HTML não tem nenhum preço', function () {
+it('a lista abre sempre sem preços (D18): nem «€», nem «desde», nem «Preço sob consulta»', function () {
     publicado(['name' => 'Caneca Azul'], 1250);
     publicado(['name' => 'Copo Alto'], null);
 
     $this->actingAs(User::factory()->create());
 
-    // Recusa: escondidos, nem «€», nem «desde», nem «Preço sob consulta».
-    $this->withSession(['show_prices' => false])->get(route('articles.index'))
+    // Recusa: sem sessão prévia, a omissão é escondido.
+    $this->get(route('articles.index'))
         ->assertOk()->assertSee('Caneca Azul')
         ->assertDontSee('€')->assertDontSee('desde')->assertDontSee('Preço sob consulta');
 
-    // Aceitação: por omissão os preços aparecem.
-    $this->flushSession();
-    $this->get(route('articles.index'))->assertSee('€', false)->assertSee('desde');
+    // Aceitação: ligado, os preços aparecem.
+    $this->withSession(['show_prices' => true])->get(route('articles.index'))
+        ->assertSee('€', false)->assertSee('desde');
 });
 
-it('o interruptor guarda a escolha na sessão e esconde os preços no HTML', function () {
+it('o interruptor liga os preços, guarda a escolha na sessão e volta a escondê-los', function () {
     publicado(['name' => 'Caneca Azul'], 1250);
 
     $this->actingAs(User::factory()->create());
 
     Livewire::test('pages::articles.index')
-        ->assertSee('desde')
-        ->call('togglePrices')
         ->assertDontSee('€')->assertDontSee('desde')
         ->call('togglePrices')
-        ->assertSee('desde');
+        ->assertSee('desde')
+        ->call('togglePrices')
+        ->assertDontSee('€')->assertDontSee('desde');
 
-    expect(session('show_prices'))->toBeTrue();
+    expect(session('show_prices'))->toBeFalse();
 });
 
 it('com os preços escondidos, pesquisar, filtrar e mostrar mais também não traz preços', function () {

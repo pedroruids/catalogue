@@ -95,7 +95,7 @@ it('lista só as variantes activas e os escalões em pt-PT, com «sob consulta»
     $inactive = ArticleVariant::factory()->create(['article_id' => $article->id, 'options' => ['Cor' => 'Azul', 'Tamanho' => 'L'], 'is_active' => false]);
     PriceTier::factory()->create(['article_variant_id' => $inactive->id, 'unit_price_cents' => 777777]);
 
-    $response = $this->actingAs(User::factory()->create())->get(route('articles.show', $article))->assertOk();
+    $response = $this->actingAs(User::factory()->create())->withSession(['show_prices' => true])->get(route('articles.show', $article))->assertOk();
 
     $response->assertSee(PriceTier::formatCents(1250), false)
         ->assertSee(PriceTier::formatCents(99), false)
@@ -106,29 +106,29 @@ it('lista só as variantes activas e os escalões em pt-PT, com «sob consulta»
         ->and(substr_count($response->getContent(), 'Esta variante ainda não tem escalões'))->toBe(1);
 });
 
-it('com os preços escondidos o HTML não tem preços nem escalões', function () {
+it('o artigo abre sempre sem preços nem escalões (D18) e só os mostra depois de ligar', function () {
     $article = artigoComVariantes();
+    $user = User::factory()->create();
 
-    $this->actingAs(User::factory()->create())->get(route('articles.show', $article))->assertSee('€');
-
-    $this->withSession(['show_prices' => false])->actingAs(User::factory()->create())
-        ->get(route('articles.show', $article))
+    $this->actingAs($user)->get(route('articles.show', $article))
         ->assertOk()
         ->assertDontSee('€')
         ->assertDontSee('data-escaloes', false)
         ->assertDontSee('Preço sob consulta')
         ->assertDontSee("1\u{00A0}000 un.", false)
         ->assertSee('Preços escondidos');
+
+    $this->withSession(['show_prices' => true])->get(route('articles.show', $article))->assertSee('€');
 });
 
-it('a escolha do interruptor persiste entre a lista e o artigo', function () {
+it('uma vez ligados, os preços ficam ligados na lista e no artigo (D11)', function () {
     $article = artigoComVariantes();
     $user = User::factory()->create();
 
     Livewire::actingAs($user)->test('pages::articles.show', ['article' => $article])->call('togglePrices');
 
-    $this->actingAs($user)->get(route('articles.index'))->assertOk()->assertDontSee('€');
-    $this->get(route('articles.show', $article))->assertOk()->assertDontSee('€');
+    $this->actingAs($user)->get(route('articles.index'))->assertOk()->assertSee('€', false);
+    $this->get(route('articles.show', $article))->assertOk()->assertSee('€', false);
 });
 
 it('os dados enviados ao cliente apontam cada variante para a sua imagem e não têm preços', function () {
@@ -162,7 +162,7 @@ it('abre o artigo sem consultas a mais com muitas variantes', function () {
 
         DB::flushQueryLog();
         DB::enableQueryLog();
-        $this->get(route('articles.show', $article))->assertOk()->assertSee('€', false);
+        $this->withSession(['show_prices' => true])->get(route('articles.show', $article))->assertOk()->assertSee('€', false);
         DB::disableQueryLog();
 
         return count(DB::getQueryLog());

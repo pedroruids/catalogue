@@ -3,7 +3,7 @@
  * /artigos/{id} quando a rede falha. Aqui lê-se a cópia local (IndexedDB) e desenha-se o ecrã certo
  * com o mesmo markup das páginas online (render.js). Sem rede nada daqui fala com o servidor.
  */
-import { CHAVE_PRECOS, formatarData, lerCopia } from './catalogo';
+import { CHAVE_LISTA, CHAVE_PRECOS, formatarData, lerCopia } from './catalogo';
 import {
     appBar,
     artigo,
@@ -15,7 +15,6 @@ import {
     semCopia,
 } from './render';
 
-const CHAVE_LISTA = 'catalogo-lista-offline'; // pesquisa/tipo da lista, para o «voltar» do artigo
 const raiz = document.getElementById('offline-raiz');
 
 const icone = (nome, classe = 'size-5') => {

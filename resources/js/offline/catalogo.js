@@ -9,6 +9,7 @@ export const CACHE_IMAGENS = 'catalogo-imagens-v1';
 const CHAVE = 'estado';
 /** Estado do interruptor de preços offline (por sessão do separador/app; ver `vista.js`). */
 export const CHAVE_PRECOS = 'catalogo-precos-offline';
+export const CHAVE_LISTA = 'catalogo-lista-offline'; // pesquisa/tipo da lista, para o «voltar» do artigo
 const PARALELO = 6;
 const INTERVALO_REVERIFICAR_MS = 10 * 60 * 1000;
 
@@ -58,6 +59,7 @@ export async function apagarCopia() {
     })();
     try {
         sessionStorage.removeItem(CHAVE_PRECOS);
+        sessionStorage.removeItem(CHAVE_LISTA);
     } catch {
         // sem sessionStorage: nada a apagar
     }
