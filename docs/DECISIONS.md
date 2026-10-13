@@ -162,3 +162,19 @@ Uma entrada por decisão (formato: `.claude/reference/adr-formato.md` do JOCA). 
 **Decisão:** `APP_LOCALE=pt` — o Filament não tem `pt_PT`, e o pacote `pt` é PT-PT («Guardar alterações»; o `pt_BR` diz «Salvar»). Os campos por omissão de um tipo novo são Material, Dimensões e Técnica de personalização.
 
 **Em aberto:** as mensagens de validação nativas do Laravel continuam em inglês (sem `lang/pt`).
+
+## D17: A cópia offline leva sempre os preços
+
+**Data:** 2026-10-13 · **Estado:** aceite · **Decidido por:** Pedro
+
+**Decisão:** o snapshot guardado no telemóvel (Onda 5a) inclui sempre os escalões de preço; o interruptor de preços só os esconde no ecrã, também offline (D11).
+
+**Porquê:** o vendedor autenticado já vê preços online, e offline tem de poder mostrá-los ao cliente sem voltar a descarregar. Mitigação: a cópia local é apagada ao sair da conta e quando entra outro utilizador no mesmo telemóvel. A D5 (sem preços no HTML) continua a valer para a partilha pública `/p/{código}`.
+
+## D18: O interruptor de preços abre sempre em «sem preços»
+
+**Data:** 2026-10-13 · **Estado:** aceite · **Decidido por:** Pedro
+
+**Decisão:** na app do vendedor, online e offline, a lista e o artigo abrem com os preços escondidos; uma vez ligado, o interruptor fica ligado na sessão (D11). Substitui a omissão «com preços» da Onda 3.
+
+**Porquê:** o cliente costuma estar a ver o ecrã; esconder por omissão evita mostrar preços por engano.
