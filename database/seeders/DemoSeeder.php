@@ -37,6 +37,10 @@ class DemoSeeder extends Seeder
 
     public function run(): void
     {
+        if (app()->isProduction()) {
+            throw new RuntimeException('DemoSeeder não corre em produção (passwords de demo).');
+        }
+
         $this->users();
 
         foreach ($this->catalogue() as $typeSpec) {
@@ -65,7 +69,8 @@ class DemoSeeder extends Seeder
 
         $keys = [];
         foreach ($spec['fields'] as $position => $field) {
-            $definition = $type->fieldDefinitions()->updateOrCreate(['name' => $field['name']], [
+            // firstOrCreate: um campo que já exista não muda de tipo (D12).
+            $definition = $type->fieldDefinitions()->firstOrCreate(['name' => $field['name']], [
                 'data_type' => $field['type'],
                 'required' => false,
                 'options' => $field['options'] ?? null,
