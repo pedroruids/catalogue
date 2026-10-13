@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Offline\CatalogSnapshotController;
 use App\Http\Controllers\Shares\ShowController as ShowShareController;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -16,6 +17,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::livewire('artigos', 'pages::articles.index')->name('articles.index');
     Route::livewire('artigos/{article}', 'pages::articles.show')->name('articles.show');
+    // Cópia local do catálogo (Onda 5, Xavier #10): snapshot JSON versionado por ETag.
+    Route::get('offline/catalogo', CatalogSnapshotController::class)->name('offline.catalog');
+
     Route::livewire('partilhar', 'pages::shares.create')->name('shares.create');
 });
 
