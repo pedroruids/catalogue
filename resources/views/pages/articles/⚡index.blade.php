@@ -128,6 +128,8 @@ new #[Layout('components.app.layout')] #[Title('Artigos')] class extends Compone
             <span class="text-sm text-muted tabular-nums" aria-live="polite">{{ $total === 1 ? '1 artigo' : $total.' artigos' }}</span>
         </div>
 
+        <x-app.catalogo-offline />
+
         {{-- Pesquisa --}}
         <div class="relative">
             <x-app.icone nome="lupa" class="pointer-events-none absolute top-3.5 left-3.5 size-5 text-muted" />

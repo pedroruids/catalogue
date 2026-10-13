@@ -10,6 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title>{{ filled($title ?? null) ? $title.' · ' : '' }}{{ config('app.name') }}</title>
+    @auth
+        @include('partials.pwa-head')
+    @endauth
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body data-app class="min-h-dvh bg-bg font-sans text-text antialiased [overflow-wrap:anywhere]">
