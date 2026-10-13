@@ -1,4 +1,12 @@
-import { arrancarActualizacaoAutomatica, formatarData, formatarTamanho, lerEstado, pedirPersistencia, sincronizar } from './catalogo';
+import './sair';
+import {
+    arrancarActualizacaoAutomatica,
+    formatarData,
+    formatarTamanho,
+    lerEstado,
+    pedirPersistencia,
+    sincronizar,
+} from './catalogo';
 
 // Só na app do vendedor (o layout põe `data-app` no body): nunca no /admin nem na página pública.
 if (document.body?.hasAttribute('data-app')) {
@@ -56,10 +64,12 @@ document.addEventListener('alpine:init', () => {
                 this.mensagem = {
                     actualizada: 'Catálogo descarregado.',
                     igual: 'Já tem a versão mais recente.',
+                    'sem-espaco':
+                        'Sem espaço no telemóvel para guardar o catálogo. Liberte espaço e tente outra vez; a cópia anterior ficou como estava.',
                     'sem-rede': 'Sem ligação. Tente outra vez quando tiver rede; a cópia anterior ficou como estava.',
                     erro: `Não foi possível descarregar${erro ? ` (${erro})` : ''}. Tente outra vez.`,
                 }[resultado];
-                this.erro = resultado === 'erro' || resultado === 'sem-rede';
+                this.erro = ['erro', 'sem-rede', 'sem-espaco'].includes(resultado);
             } catch {
                 this.mensagem = 'Não foi possível descarregar. Tente outra vez.';
                 this.erro = true;

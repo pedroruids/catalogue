@@ -44,6 +44,11 @@ it('recusa visitantes', function () {
     $this->get(route('offline.catalog'))->assertRedirect(route('login'));
 });
 
+it('recusa utilizadores com o email por verificar', function () {
+    $this->actingAs(User::factory()->unverified()->create())->getJson(route('offline.catalog'))->assertForbidden();
+    $this->actingAs(User::factory()->unverified()->create())->get(route('offline.catalog'))->assertRedirect(route('verification.notice'));
+});
+
 it('serve o snapshot a vendedores e a admins', function (User $user) {
     artigoCompleto();
 

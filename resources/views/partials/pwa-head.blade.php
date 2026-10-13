@@ -7,3 +7,4 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png">
 <meta name="catalogo-snapshot-url" content="{{ route('offline.catalog', absolute: false) }}">
+<meta name="catalogo-utilizador" content="{{ auth()->id() }}">

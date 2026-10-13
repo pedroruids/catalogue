@@ -11,6 +11,7 @@ const PARALELO = 6;
 const INTERVALO_REVERIFICAR_MS = 10 * 60 * 1000;
 
 const urlSnapshot = () => document.querySelector('meta[name="catalogo-snapshot-url"]')?.content ?? null;
+const utilizadorActual = () => document.querySelector('meta[name="catalogo-utilizador"]')?.content ?? null;
 
 function abrirBD() {
     return new Promise((resolve, reject) => {
@@ -33,8 +34,30 @@ const terminada = (tx) =>
         tx.onabort = () => reject(tx.error ?? new Error('transacção abortada'));
     });
 
-/** Estado da cópia actual (ou null se nunca foi descarregada). */
-export async function lerEstado() {
+/**
+ * Apaga a cópia local (IndexedDB + imagens). Chamada ao terminar sessão e quando a cópia é de outro
+ * utilizador. Nunca rejeita: o que não for possível apagar não pode impedir o logout.
+ */
+export async function apagarCopia() {
+    const bd = new Promise((resolve) => {
+        try {
+            const pedido = indexedDB.deleteDatabase(BD);
+            pedido.onsuccess = pedido.onerror = pedido.onblocked = () => resolve();
+        } catch {
+            resolve();
+        }
+    });
+    const imagens = (async () => {
+        try {
+            await caches.delete(CACHE_IMAGENS);
+        } catch {
+            // sem Cache Storage: nada a apagar
+        }
+    })();
+    await Promise.all([bd, imagens]);
+}
+
+async function lerEstadoBruto() {
     const bd = await abrirBD();
     try {
         return await new Promise((resolve, reject) => {
@@ -45,6 +68,20 @@ export async function lerEstado() {
     } finally {
         bd.close();
     }
+}
+
+/**
+ * Estado da cópia actual (ou null se nunca foi descarregada). Uma cópia de OUTRO utilizador (telemóvel
+ * partilhado, logout que não correu) é apagada e conta como inexistente.
+ */
+export async function lerEstado() {
+    const estado = await lerEstadoBruto();
+    const utilizador = utilizadorActual();
+    if (estado && utilizador && estado.utilizador !== utilizador) {
+        await apagarCopia();
+        return null;
+    }
+    return estado;
 }
 
 /** Substitui a cópia numa só transacção: ou fica tudo novo ou fica tudo como estava. */
@@ -113,21 +150,26 @@ async function descarregarImagens(urls, aoProgresso) {
 
     await Promise.all(Array.from({ length: Math.min(PARALELO, urls.length) }, trabalhador));
 
-    // Imagens que já não pertencem ao catálogo saem da cache.
+    return { bytes, falhas };
+}
+
+/** Imagens que já não pertencem ao catálogo saem da cache — só DEPOIS de a nova cópia estar guardada. */
+async function limparImagensAntigas(urls) {
+    const cache = await caches.open(CACHE_IMAGENS);
     const conjunto = new Set(urls.map((u) => new URL(u, location.origin).href));
     for (const pedido of await cache.keys()) {
         if (!conjunto.has(pedido.url)) await cache.delete(pedido);
     }
-
-    return { bytes, falhas };
 }
+
+const semEspaco = (erro) => erro?.name === 'QuotaExceededError';
 
 let emCurso = null;
 
 /**
  * Sincroniza a cópia com o servidor. Com `forcar` descarrega mesmo sem cópia anterior; sem ele,
  * só actua se já houver cópia (é o que o arranque automático usa). Resultado:
- * 'actualizada' | 'igual' | 'sem-copia' | 'sem-rede' | 'erro'.
+ * 'actualizada' | 'igual' | 'sem-copia' | 'sem-rede' | 'sem-espaco' | 'erro'.
  */
 export function sincronizar({ aoProgresso = () => {} } = {}) {
     emCurso ??= executar(aoProgresso).finally(() => {
@@ -146,7 +188,10 @@ async function executar(aoProgresso) {
     try {
         resposta = await fetch(url, {
             credentials: 'same-origin',
-            headers: { Accept: 'application/json', ...(anterior ? { 'If-None-Match': `"${anterior.versao}"` } : {}) },
+            headers: {
+                Accept: 'application/json',
+                ...(anterior ? { 'If-None-Match': `"${anterior.versao}"` } : {}),
+            },
         });
     } catch {
         return { resultado: 'sem-rede' };
@@ -165,20 +210,34 @@ async function executar(aoProgresso) {
     try {
         imagens = await descarregarImagens(urlsImagens(snapshot), aoProgresso);
     } catch (erro) {
+        if (semEspaco(erro)) return { resultado: 'sem-espaco' };
         return erro instanceof TypeError ? { resultado: 'sem-rede' } : { resultado: 'erro', erro: String(erro) };
     }
 
     const agora = Date.now();
-    await guardarCopia(snapshot, {
-        versao: snapshot.version,
-        gerada_em: snapshot.generated_at,
-        sincronizada_em: agora,
-        verificada_em: agora,
-        artigos: snapshot.articles.length,
-        imagens: urlsImagens(snapshot).length - imagens.falhas,
-        imagens_em_falta: imagens.falhas,
-        bytes: new Blob([texto]).size + imagens.bytes,
-    });
+    const urls = urlsImagens(snapshot);
+    try {
+        await guardarCopia(snapshot, {
+            utilizador: utilizadorActual(),
+            versao: snapshot.version,
+            gerada_em: snapshot.generated_at,
+            sincronizada_em: agora,
+            verificada_em: agora,
+            artigos: snapshot.articles.length,
+            imagens: urls.length - imagens.falhas,
+            imagens_em_falta: imagens.falhas,
+            bytes: new Blob([texto]).size + imagens.bytes,
+        });
+    } catch (erro) {
+        // A transacção abortou: a cópia anterior (e as suas imagens) ficam intactas.
+        return semEspaco(erro) ? { resultado: 'sem-espaco' } : { resultado: 'erro', erro: String(erro) };
+    }
+
+    try {
+        await limparImagensAntigas(urls);
+    } catch {
+        // best-effort: sobram imagens, que a próxima sincronização limpa
+    }
 
     return { resultado: 'actualizada' };
 }
@@ -198,7 +257,10 @@ export function formatarTamanho(bytes) {
 }
 
 export function formatarData(ms) {
-    return new Date(ms).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(ms).toLocaleString('pt-PT', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+    });
 }
 
 /** Ao abrir a app (e ao voltar a ela passado algum tempo): se já há cópia e a versão mudou, actualiza. */

@@ -14,6 +14,17 @@ it('a app do vendedor liga o manifest, as meta tags do iOS e o URL do snapshot',
         ->assertSee('name="catalogo-snapshot-url" content="/offline/catalogo"', false);
 });
 
+it('a app do vendedor identifica o utilizador da cópia local e o logout do /admin apaga-a', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('articles.index'))
+        ->assertSee('name="catalogo-utilizador" content="'.$user->id.'"', false);
+
+    // O script que apaga a cópia ao terminar sessão também carrega no Filament
+    $this->actingAs(User::factory()->admin()->create())->get('/admin')->assertOk()->assertSee('sair-', false);
+    expect(file_get_contents(resource_path('js/offline/sair.js')))->toContain("endsWith('/logout')");
+});
+
 it('o manifest é válido e os ícones que declara existem', function () {
     $manifest = json_decode((string) file_get_contents(public_path('manifest.webmanifest')), true, flags: JSON_THROW_ON_ERROR);
 
