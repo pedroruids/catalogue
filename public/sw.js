@@ -38,7 +38,11 @@ self.addEventListener('install', (evento) => {
 self.addEventListener('activate', (evento) => {
     evento.waitUntil(
         (async () => {
-            for (const nome of await caches.keys()) {
+            // Só se larga o shell anterior quando o novo já tem a sua página: se o install não o
+            // conseguiu guardar (sem rede), o antigo continua a servir o offline até ao próximo.
+            const novo = await caches.open(CACHE_SHELL);
+            const pronto = Boolean(await novo.match(SHELL, { ignoreVary: true }));
+            for (const nome of pronto ? await caches.keys() : []) {
                 if (nome.startsWith(PREFIXO_CACHE_SHELL) && nome !== CACHE_SHELL) await caches.delete(nome);
             }
             await self.clients.claim();
